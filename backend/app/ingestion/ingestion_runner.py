@@ -1,0 +1,56 @@
+import logging
+
+from app.ingestion.ingestion_service import IngestionService
+from app.vector_store.collection_initializer import CollectionInitializer
+
+logger = logging.getLogger(__name__)
+
+
+class IngestionRunner:
+    """Orchestrator for the complete ingestion pipeline."""
+
+    @staticmethod
+    def run() -> None:
+        """
+        Run the complete ingestion pipeline.
+
+        Steps:
+        1. Initialize Qdrant collection
+        2. Ingest resolved incidents and datafixes
+        3. Print summary
+        """
+        logger.info("=" * 80)
+        logger.info("STARTING INGESTION PIPELINE")
+        logger.info("=" * 80)
+
+        try:
+            # Step 1: Initialize collection
+            logger.info("\n[Step 1] Initializing Qdrant collection...")
+            CollectionInitializer.initialize()
+            logger.info("[Step 1] Collection initialization completed")
+
+            # Step 2: Ingest data
+            logger.info("\n[Step 2] Starting data ingestion...")
+            ingestion_service = IngestionService()
+            summary = ingestion_service.ingest_data()
+            logger.info("[Step 2] Data ingestion completed")
+
+            # Step 3: Print summary
+            logger.info("\n[Step 3] INGESTION SUMMARY")
+            logger.info("=" * 80)
+            logger.info(f"Total resolved incidents found: {summary.total_resolved_incidents}")
+            logger.info(f"Incidents with datafixes: {summary.incidents_with_datafixes}")
+            logger.info(f"Incidents without datafixes: {summary.incidents_without_datafixes}")
+            logger.info(f"Total incidents ingested: {summary.total_incidents_ingested}")
+            logger.info(f"Failed batches: {summary.failed_count}")
+            logger.info(f"Batch size: {summary.batch_size}")
+            logger.info(f"Total batches processed: {summary.total_batches}")
+            logger.info("=" * 80)
+            logger.info("INGESTION PIPELINE COMPLETED SUCCESSFULLY\n")
+
+        except Exception as e:
+            logger.error("=" * 80)
+            logger.error("INGESTION PIPELINE FAILED")
+            logger.error(f"Error: {str(e)}")
+            logger.error("=" * 80)
+            raise
