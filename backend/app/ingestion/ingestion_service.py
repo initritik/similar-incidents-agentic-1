@@ -88,6 +88,56 @@ class IngestionService:
             logger.error(f"Ingestion process failed: {str(e)}")
             raise
 
+    def ingest_single_incident(self, incident_number: str) -> bool:
+        """
+        Ingest a single incident into Qdrant incrementally.
+        
+        This enables the knowledge base to grow dynamically without 
+        requiring a full collection reload or application restart.
+        """
+        logger.info(f"Starting incremental ingestion for incident: {incident_number}")
+        
+        try:
+            # 1. Load incident from mock data
+            incident = next((i for i in MOCK_INCIDENTS if i.incident_number == incident_number), None)
+            if not incident:
+                logger.error(f"Incident {incident_number} not found in mock data")
+                return False
+            
+            # Knowledge base only indexes RESOLVED incidents
+            if incident.state != IncidentState.RESOLVED:
+                logger.warning(f"Incident {incident_number} state is {incident.state}, not RESOLVED. Skipping.")
+                return False
+
+            # 2. Load associated datafix
+            datafix = next((df for df in MOCK_DATAFIXES if df.incident_number == incident_number), None)
+
+            # 3. Create ingestion record
+            record = IncidentIngestionRecord(
+                incident_number=incident.incident_number,
+                short_description=incident.short_description,
+                description=incident.description,
+                state=incident.state.value,
+                resolution_notes=incident.resolution_notes,
+                assignment_group=incident.assignment_group,
+                assigned_to=incident.assigned_to,
+                created_date=incident.created_date.isoformat() if hasattr(incident.created_date, 'isoformat') else str(incident.created_date),
+                updated_date=incident.updated_date.isoformat() if hasattr(incident.updated_date, 'isoformat') else str(incident.updated_date),
+                datafix_id=datafix.datafix_id if datafix else None,
+                datafix_description=datafix.description if datafix else None,
+                datafix_code=datafix.datafix_code if datafix else None,
+            )
+
+            # 4. Generate embedding and upsert using existing batch processing logic
+            self._process_batch([record])
+            
+            logger.info(f"Incremental ingestion completed for {incident_number}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Incremental ingestion failed for {incident_number}: {str(e)}")
+            return False
+
     def _collect_ingestion_records(self) -> list[IncidentIngestionRecord]:
         """
         Collect all resolved incidents with their datafixes.

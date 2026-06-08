@@ -28,7 +28,11 @@ class WorkflowOrchestratorTests(unittest.TestCase):
         self.assertEqual(payload["overall_status"], WorkflowStatus.COMPLETED)
         self.assertEqual(payload["agent_statuses"][0]["agent_name"], "Agent 1")
         self.assertEqual(payload["agent_statuses"][0]["status"], WorkflowStatus.COMPLETED)
-        self.assertEqual(payload["agent_statuses"][1]["status"], WorkflowStatus.SKIPPED)
+        self.assertEqual(payload["agent_statuses"][1]["status"], WorkflowStatus.COMPLETED)
+        self.assertEqual(payload["agent_statuses"][2]["status"], WorkflowStatus.COMPLETED)
+        self.assertEqual(payload["agent_statuses"][3]["status"], WorkflowStatus.SKIPPED)
+        self.assertEqual(payload["agent_statuses"][4]["status"], WorkflowStatus.COMPLETED)
+        self.assertIn("agent_5", payload["agent_results"])
 
     def test_start_workflow_records_agent1_failure(self) -> None:
         response = self.client.post(
@@ -63,4 +67,3 @@ class WorkflowOrchestratorTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
