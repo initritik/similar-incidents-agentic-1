@@ -2,7 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, Field
 
-from app.models.enums import IncidentState
+from backend.app.models.enums import IncidentState
 
 
 class Incident(BaseModel):

@@ -1,6 +1,6 @@
 import logging
 
-from app.vector_store.qdrant_service import QdrantService
+from backend.app.vector_store.qdrant_service import QdrantService
 
 logger = logging.getLogger(__name__)
 

@@ -3,8 +3,8 @@ from datetime import UTC, datetime
 from threading import RLock
 from uuid import uuid4
 
-from app.models.enums import WorkflowStatus
-from app.orchestrator.workflow_models import WorkflowAgentStatus, WorkflowExecution
+from backend.app.models.enums import WorkflowStatus
+from backend.app.orchestrator.workflow_models import WorkflowAgentStatus, WorkflowExecution
 
 
 class WorkflowStatusStore:

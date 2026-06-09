@@ -1,7 +1,7 @@
 import logging
 
-from app.ingestion.ingestion_service import IngestionService
-from app.vector_store.collection_initializer import CollectionInitializer
+from backend.app.ingestion.ingestion_service import IngestionService
+from backend.app.vector_store.collection_initializer import CollectionInitializer
 
 logger = logging.getLogger(__name__)
 

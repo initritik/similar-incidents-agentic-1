@@ -1,11 +1,11 @@
 import logging
 
-from app.models.datafix import Datafix
-from app.models.incident import Incident
-from app.models.similar_incident import SimilarIncidentResult
-from app.services.datafix_service import DatafixService
-from app.vector_store.embedding_service import EmbeddingService
-from app.vector_store.qdrant_service import QdrantService
+from backend.app.models.datafix import Datafix
+from backend.app.models.incident import Incident
+from backend.app.models.similar_incident import SimilarIncidentResult
+from backend.app.services.datafix_service import DatafixService
+from backend.app.vector_store.embedding_service import EmbeddingService
+from backend.app.vector_store.qdrant_service import QdrantService
 
 logger = logging.getLogger(__name__)
 

@@ -8,8 +8,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from fastapi.testclient import TestClient
 
-from app.main import app
-from app.models import Incident, IncidentState
+from backend.app.main import app
+from backend.app.models import Incident, IncidentState
 
 
 class Agent1DataIntegrityTests(unittest.TestCase):

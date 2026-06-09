@@ -52,7 +52,7 @@ def main():
     """Main entry point for the ingestion script."""
     try:
         # Import after loading environment
-        from app.ingestion.ingestion_runner import IngestionRunner
+        from backend.app.ingestion.ingestion_runner import IngestionRunner
 
         # Run ingestion
         IngestionRunner.run()

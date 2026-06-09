@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 
-from app.agents.agent5_resolution_recommendation import Agent5ResolutionRecommendation
-from app.schemas.agent5_schemas import Agent5Request, Agent5Response
+from backend.app.agents.agent5_resolution_recommendation import Agent5ResolutionRecommendation
+from backend.app.schemas.agent5_schemas import Agent5Request, Agent5Response
 
 router = APIRouter(prefix="/api/agents/agent5", tags=["Agent 5"])
 

@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 
-from app.models.incident import Incident
+from backend.app.models.incident import Incident
 
 
 class SimilarIncidentResult(BaseModel):

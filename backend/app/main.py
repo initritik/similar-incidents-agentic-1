@@ -5,7 +5,7 @@ from fastapi.exceptions import RequestValidationError
 from pydantic import ValidationError
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import (
+from backend.app.api import (
     agent1_router,
     agent2_router,
     agent3_router,

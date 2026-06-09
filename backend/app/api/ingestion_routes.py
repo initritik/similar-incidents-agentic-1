@@ -3,10 +3,10 @@ import logging
 from fastapi import APIRouter, status
 from fastapi.responses import JSONResponse
 
-from app.ingestion.ingestion_models import IngestionSummary
-from app.ingestion.ingestion_runner import IngestionRunner
-from app.ingestion.ingestion_service import IngestionService
-from app.schemas import MessageResponse
+from backend.app.ingestion.ingestion_models import IngestionSummary
+from backend.app.ingestion.ingestion_runner import IngestionRunner
+from backend.app.ingestion.ingestion_service import IngestionService
+from backend.app.schemas import MessageResponse
 
 logger = logging.getLogger(__name__)
 
@@ -152,7 +152,7 @@ def ingestion_status() -> JSONResponse:
         JSON response with connection and collection status.
     """
     try:
-        from app.vector_store.qdrant_service import QdrantService
+        from backend.app.vector_store.qdrant_service import QdrantService
         
         qdrant_service = QdrantService()
         exists = qdrant_service.collection_exists()

@@ -4,8 +4,8 @@ from typing import List
 
 from openai import OpenAI
 
-from app.schemas.agent5_schemas import Agent5Request, Agent5Response, SupportingIncidentInfo
-from app.utils.placeholder_utils import standardize_placeholders
+from backend.app.schemas.agent5_schemas import Agent5Request, Agent5Response, SupportingIncidentInfo
+from backend.app.utils.placeholder_utils import standardize_placeholders
 
 logger = logging.getLogger(__name__)
 

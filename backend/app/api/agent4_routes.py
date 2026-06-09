@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 
-from app.agents.agent4_resolution_capture import Agent4ResolutionCapture
-from app.schemas.agent4_schemas import Agent4ResolutionRequest, Agent4Response
+from backend.app.agents.agent4_resolution_capture import Agent4ResolutionCapture
+from backend.app.schemas.agent4_schemas import Agent4ResolutionRequest, Agent4Response
 
 router = APIRouter(prefix="/api/agents/agent4", tags=["Agent 4"])
 

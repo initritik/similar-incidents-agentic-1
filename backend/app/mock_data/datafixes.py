@@ -1,4 +1,4 @@
-from app.models import Datafix
+from backend.app.models import Datafix
 
 
 MOCK_DATAFIXES: list[Datafix] = [

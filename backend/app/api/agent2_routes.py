@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 
-from app.agents.agent2_similarity_search import Agent2SimilaritySearch
-from app.schemas import Agent1ValidationRequest, Agent2Response
-from app.services import IncidentService
+from backend.app.agents.agent2_similarity_search import Agent2SimilaritySearch
+from backend.app.schemas import Agent1ValidationRequest, Agent2Response
+from backend.app.services import IncidentService
 
 router = APIRouter(prefix="/api/agents/agent2", tags=["Agent 2"])
 

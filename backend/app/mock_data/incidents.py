@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from app.models import Incident, IncidentState
+from backend.app.models import Incident, IncidentState
 
 
 MOCK_INCIDENTS: list[Incident] = [

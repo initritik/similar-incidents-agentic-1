@@ -1,9 +1,9 @@
 from pydantic import BaseModel, Field
 
-from app.models.datafix import Datafix
-from app.models.enums import WorkflowStatus
-from app.models.incident import Incident
-from app.models.similar_incident import SimilarIncidentResult
+from backend.app.models.datafix import Datafix
+from backend.app.models.enums import WorkflowStatus
+from backend.app.models.incident import Incident
+from backend.app.models.similar_incident import SimilarIncidentResult
 
 
 class Agent1Response(BaseModel):

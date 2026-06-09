@@ -1,10 +1,10 @@
 from fastapi import APIRouter, status
 from fastapi.responses import JSONResponse
 
-from app.models import Incident
-from app.schemas import MessageResponse
-from app.services import IncidentService
-from app.utils import is_valid_incident_number
+from backend.app.models import Incident
+from backend.app.schemas import MessageResponse
+from backend.app.services import IncidentService
+from backend.app.utils import is_valid_incident_number
 
 router = APIRouter(prefix="/api/incidents", tags=["Incidents"])
 

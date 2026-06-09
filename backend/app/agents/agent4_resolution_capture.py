@@ -4,11 +4,11 @@ from uuid import uuid4
 from typing import Optional
 from types import SimpleNamespace
 
-from app.mock_data.incidents import MOCK_INCIDENTS
-from app.mock_data.datafixes import MOCK_DATAFIXES
-from app.models.enums import IncidentState
-from app.ingestion.ingestion_service import IngestionService
-from app.schemas.agent4_schemas import Agent4ResolutionRequest, Agent4Response
+from backend.app.mock_data.incidents import MOCK_INCIDENTS
+from backend.app.mock_data.datafixes import MOCK_DATAFIXES
+from backend.app.models.enums import IncidentState
+from backend.app.ingestion.ingestion_service import IngestionService
+from backend.app.schemas.agent4_schemas import Agent4ResolutionRequest, Agent4Response
 
 logger = logging.getLogger(__name__)
 

@@ -5,12 +5,12 @@ from datetime import datetime
 
 from qdrant_client.http import models
 
-from app.ingestion.ingestion_models import IngestionSummary, IncidentIngestionRecord
-from app.mock_data.datafixes import MOCK_DATAFIXES
-from app.mock_data.incidents import MOCK_INCIDENTS
-from app.models.enums import IncidentState
-from app.vector_store.embedding_service import EmbeddingService
-from app.vector_store.qdrant_service import QdrantService
+from backend.app.ingestion.ingestion_models import IngestionSummary, IncidentIngestionRecord
+from backend.app.mock_data.datafixes import MOCK_DATAFIXES
+from backend.app.mock_data.incidents import MOCK_INCIDENTS
+from backend.app.models.enums import IncidentState
+from backend.app.vector_store.embedding_service import EmbeddingService
+from backend.app.vector_store.qdrant_service import QdrantService
 
 logger = logging.getLogger(__name__)
 

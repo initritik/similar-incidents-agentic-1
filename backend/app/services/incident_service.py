@@ -1,5 +1,5 @@
-from app.mock_data.incidents import MOCK_INCIDENTS
-from app.models import Incident
+from backend.app.mock_data.incidents import MOCK_INCIDENTS
+from backend.app.models import Incident
 
 
 class IncidentService:

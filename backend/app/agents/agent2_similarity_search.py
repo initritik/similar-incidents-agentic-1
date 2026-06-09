@@ -1,10 +1,10 @@
 import logging
 
-from app.mock_data.datafixes import MOCK_DATAFIXES
-from app.mock_data.incidents import MOCK_INCIDENTS
-from app.models import Incident
-from app.schemas.agent_responses import Agent2Response
-from app.vector_store.vector_search_service import VectorSearchService
+from backend.app.mock_data.datafixes import MOCK_DATAFIXES
+from backend.app.mock_data.incidents import MOCK_INCIDENTS
+from backend.app.models import Incident
+from backend.app.schemas.agent_responses import Agent2Response
+from backend.app.vector_store.vector_search_service import VectorSearchService
 
 logger = logging.getLogger(__name__)
 

@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
-from app.agents import Agent1DataIntegrityChecker
-from app.schemas import Agent1Response, Agent1ValidationRequest
+from backend.app.agents import Agent1DataIntegrityChecker
+from backend.app.schemas import Agent1Response, Agent1ValidationRequest
 
 router = APIRouter(prefix="/api/agents/agent1", tags=["Agent 1"])
 

@@ -1,5 +1,5 @@
-from app.mock_data.datafixes import MOCK_DATAFIXES
-from app.models import Datafix
+from backend.app.mock_data.datafixes import MOCK_DATAFIXES
+from backend.app.models import Datafix
 
 
 class DatafixService:

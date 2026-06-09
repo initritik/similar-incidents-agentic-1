@@ -1,5 +1,5 @@
-from app.schemas.agent_requests import Agent1ValidationRequest
-from app.schemas.agent_responses import (
+from backend.app.schemas.agent_requests import Agent1ValidationRequest
+from backend.app.schemas.agent_responses import (
     Agent1Response,
     Agent2Response,
     Agent3Response,
@@ -7,8 +7,8 @@ from app.schemas.agent_responses import (
     Agent5Response,
     SimilarIncidentDetail,
 )
-from app.schemas.agent_status import AgentStatus
-from app.schemas.error import MessageResponse
+from backend.app.schemas.agent_status import AgentStatus
+from backend.app.schemas.error import MessageResponse
 
 __all__ = [
     "Agent1ValidationRequest",

@@ -1,6 +1,6 @@
 import logging
 
-from app.schemas.agent_responses import Agent3Response, SimilarIncidentDetail
+from backend.app.schemas.agent_responses import Agent3Response, SimilarIncidentDetail
 
 logger = logging.getLogger(__name__)
 

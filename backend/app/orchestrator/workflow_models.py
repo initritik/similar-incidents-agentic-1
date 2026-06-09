@@ -2,7 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, Field
 
-from app.models.enums import WorkflowStatus
+from backend.app.models.enums import WorkflowStatus
 
 
 class WorkflowAgentStatus(BaseModel):

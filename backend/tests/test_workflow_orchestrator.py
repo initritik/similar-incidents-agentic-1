@@ -6,9 +6,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from fastapi.testclient import TestClient
 
-from app.main import app
-from app.models import WorkflowStatus
-from app.orchestrator import workflow_store
+from backend.app.main import app
+from backend.app.models import WorkflowStatus
+from backend.app.orchestrator import workflow_store
 
 
 class WorkflowOrchestratorTests(unittest.TestCase):

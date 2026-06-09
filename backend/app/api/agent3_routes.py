@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
-from app.agents.agent3_similar_incident_retriever import Agent3SimilarIncidentRetriever
-from app.schemas import Agent2Response, Agent3Response
+from backend.app.agents.agent3_similar_incident_retriever import Agent3SimilarIncidentRetriever
+from backend.app.schemas import Agent2Response, Agent3Response
 
 router = APIRouter(prefix="/api/agents/agent3", tags=["Agent 3"])
 

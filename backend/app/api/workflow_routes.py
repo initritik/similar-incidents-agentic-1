@@ -1,13 +1,13 @@
 from fastapi import APIRouter, status
 from fastapi.responses import JSONResponse
 
-from app.orchestrator import (
+from backend.app.orchestrator import (
     StartWorkflowRequest,
     WorkflowExecution,
     WorkflowOrchestrator,
     workflow_store,
 )
-from app.schemas import MessageResponse
+from backend.app.schemas import MessageResponse
 
 router = APIRouter(prefix="/api/workflows", tags=["Workflows"])
 
