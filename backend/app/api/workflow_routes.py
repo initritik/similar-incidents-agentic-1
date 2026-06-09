@@ -23,7 +23,13 @@ router = APIRouter(prefix="/api/workflows", tags=["Workflows"])
 )
 def start_workflow(request: StartWorkflowRequest) -> WorkflowExecution:
     orchestrator = WorkflowOrchestrator()
-    return orchestrator.start_workflow(request.incident_number)
+    return orchestrator.start_workflow(
+        incident_number=request.incident_number,
+        provide_resolution=request.provide_resolution,
+        resolution_notes=request.resolution_notes,
+        datafix_description=request.datafix_description,
+        datafix_code=request.datafix_code,
+    )
 
 
 @router.get(

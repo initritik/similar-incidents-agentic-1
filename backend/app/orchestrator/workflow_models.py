@@ -22,10 +22,19 @@ class WorkflowExecution(BaseModel):
     agent_statuses: list[WorkflowAgentStatus]
     agent_results: dict[str, dict] = Field(
         default_factory=dict,
-        description="Results from each completed agent (e.g., agent_1, agent_2, agent_3)",
+        description="Results from each completed agent (e.g., agent_1, agent_2, agent_3, agent_4)",
     )
 
 
 class StartWorkflowRequest(BaseModel):
     incident_number: str = Field(examples=["INC000005"])
+    provide_resolution: bool | None = Field(
+        default=None,
+        description=(
+            "Agent 4 input. False means the user declined to provide a resolution."
+        ),
+    )
+    resolution_notes: str | None = None
+    datafix_description: str | None = None
+    datafix_code: str | None = None
 

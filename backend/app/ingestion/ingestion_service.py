@@ -88,6 +88,55 @@ class IngestionService:
             logger.error(f"Ingestion process failed: {str(e)}")
             raise
 
+    def ingest_single_resolution(
+        self,
+        *,
+        incident_number: str,
+        short_description: str,
+        description: str,
+        resolution_notes: str,
+        assignment_group: str,
+        assigned_to: str,
+        created_date: str,
+        updated_date: str,
+        datafix_id: str | None = None,
+        datafix_description: str | None = None,
+        datafix_code: str | None = None,
+    ) -> IncidentIngestionRecord:
+        """
+        Ingest one captured resolution as a reusable resolved knowledge record.
+
+        Uses incident_number as the deterministic point ID, so repeat submissions
+        update the same Qdrant point instead of creating duplicates.
+        """
+        record = IncidentIngestionRecord(
+            incident_number=incident_number,
+            short_description=short_description,
+            description=description,
+            state=IncidentState.RESOLVED.value,
+            resolution_notes=resolution_notes,
+            assignment_group=assignment_group,
+            assigned_to=assigned_to,
+            created_date=created_date,
+            updated_date=updated_date,
+            datafix_id=datafix_id,
+            datafix_description=datafix_description,
+            datafix_code=datafix_code,
+        )
+        self.ingest_single_record(record)
+        return record
+
+    def ingest_single_record(self, record: IncidentIngestionRecord) -> None:
+        """Prepare and upsert one ingestion record into Qdrant."""
+        logger.info("Preparing ingestion payload")
+        point = self._build_point(record)
+        self.upsert_or_update_record(point)
+
+    def upsert_or_update_record(self, point: models.PointStruct) -> None:
+        """Idempotently insert or update one Qdrant record."""
+        logger.info("Upserting record into Qdrant")
+        self.qdrant_service.upsert_batch([point])
+
     def _collect_ingestion_records(self) -> list[IncidentIngestionRecord]:
         """
         Collect all resolved incidents with their datafixes.
@@ -168,39 +217,7 @@ class IngestionService:
 
         for record in batch:
             try:
-                # Build embedding input
-                embedding_input = f"{record.short_description} {record.description}".strip()
-
-                # Generate embedding
-                embedding = self.embedding_service.generate_embedding(embedding_input)
-
-                # Create unique point ID from incident_number
-                point_id = self._generate_point_id(record.incident_number)
-
-                # Create payload
-                payload = {
-                    "incident_number": record.incident_number,
-                    "short_description": record.short_description,
-                    "description": record.description,
-                    "state": record.state,
-                    "resolution_notes": record.resolution_notes,
-                    "assignment_group": record.assignment_group,
-                    "assigned_to": record.assigned_to,
-                    "created_date": record.created_date,
-                    "updated_date": record.updated_date,
-                    "datafix_id": record.datafix_id,
-                    "datafix_description": record.datafix_description,
-                    "datafix_code": record.datafix_code,
-                }
-
-                # Create point
-                point = models.PointStruct(
-                    id=point_id,
-                    vector=embedding,
-                    payload=payload,
-                )
-                points.append(point)
-
+                points.append(self._build_point(record))
                 logger.debug(f"Prepared point for {record.incident_number}")
 
             except Exception as e:
@@ -211,6 +228,34 @@ class IngestionService:
 
         # Upsert batch
         self.qdrant_service.upsert_batch(points)
+
+    def _build_point(self, record: IncidentIngestionRecord) -> models.PointStruct:
+        embedding_input = f"{record.short_description} {record.description}".strip()
+
+        logger.info("Generating embedding")
+        embedding = self.embedding_service.generate_embedding(embedding_input)
+
+        point_id = self._generate_point_id(record.incident_number)
+        payload = {
+            "incident_number": record.incident_number,
+            "short_description": record.short_description,
+            "description": record.description,
+            "state": record.state,
+            "resolution_notes": record.resolution_notes,
+            "assignment_group": record.assignment_group,
+            "assigned_to": record.assigned_to,
+            "created_date": record.created_date,
+            "updated_date": record.updated_date,
+            "datafix_id": record.datafix_id,
+            "datafix_description": record.datafix_description,
+            "datafix_code": record.datafix_code,
+        }
+
+        return models.PointStruct(
+            id=point_id,
+            vector=embedding,
+            payload=payload,
+        )
 
     def _generate_point_id(self, incident_number: str) -> int:
         """

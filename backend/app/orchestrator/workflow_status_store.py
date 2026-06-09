@@ -28,19 +28,19 @@ class WorkflowStatusStore:
                 WorkflowAgentStatus(
                     agent_name="Agent 2",
                     status=WorkflowStatus.PENDING,
-                    current_task="Pending future implementation.",
+                    current_task="Similar incident search",
                     message="Waiting to start.",
                 ),
                 WorkflowAgentStatus(
                     agent_name="Agent 3",
                     status=WorkflowStatus.PENDING,
-                    current_task="Pending future implementation.",
+                    current_task="Similar incident analysis and top match selection",
                     message="Waiting to start.",
                 ),
                 WorkflowAgentStatus(
                     agent_name="Agent 4",
                     status=WorkflowStatus.PENDING,
-                    current_task="Pending future implementation.",
+                    current_task="Resolution capture and knowledge ingestion",
                     message="Waiting to start.",
                 ),
                 WorkflowAgentStatus(

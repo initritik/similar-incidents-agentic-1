@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
-from app.agents.agent3_similar_incident_retriever import Agent3SimilarIncidentRetriever
-from app.schemas import Agent2Response, Agent3Response
+from app.agents.agent3_similar_incident_analyzer import Agent3SimilarIncidentAnalyzer
+from app.schemas import Agent3Response
 
 router = APIRouter(prefix="/api/agents/agent3", tags=["Agent 3"])
 
@@ -12,8 +12,7 @@ router = APIRouter(prefix="/api/agents/agent3", tags=["Agent 3"])
     summary="Process similar incident retrieval and ranking",
     description=(
         "Run Agent 3 to filter, rank, and prepare similar incidents from Agent 2 results. "
-        "Agent 3 filters incidents by similarity threshold (30%), selects top 5, "
-        "and provides routing decision for the next agent."
+        "Agent 3 filters incidents by similarity threshold (30%) and selects top 5."
     ),
 )
 def process_similar_incidents(agent2_results: dict) -> Agent3Response:
@@ -24,7 +23,7 @@ def process_similar_incidents(agent2_results: dict) -> Agent3Response:
         agent2_results: Response payload from Agent 2.
 
     Returns:
-        Agent3Response with filtered top 5 incidents and routing decision.
+        Agent3Response with filtered top 5 incidents and future routing flag.
     """
-    agent = Agent3SimilarIncidentRetriever()
-    return agent.process(agent2_results)
+    agent = Agent3SimilarIncidentAnalyzer()
+    return agent.analyze(agent2_results)

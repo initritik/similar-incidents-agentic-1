@@ -1,9 +1,7 @@
 from pydantic import BaseModel, Field
 
-from app.models.datafix import Datafix
 from app.models.enums import WorkflowStatus
 from app.models.incident import Incident
-from app.models.similar_incident import SimilarIncidentResult
 
 
 class Agent1Response(BaseModel):
@@ -40,25 +38,26 @@ class SimilarIncidentDetail(BaseModel):
 
 
 class Agent3Response(BaseModel):
-    """Agent 3 retrieval and ranking response."""
+    """Agent 3 similar incident analyzer response."""
 
     success: bool
-    message: str
     similar_incidents_found: bool
-    total_matches_found: int
-    top_similar_incidents: list[SimilarIncidentDetail] = Field(
+    message: str
+    match_count: int
+    top_matches: list[SimilarIncidentDetail] = Field(
         default_factory=list,
-        description="Top 5 similar incidents ranked by similarity score",
-    )
-    next_agent: str = Field(
-        description="Routing decision: 'agent4' if no similar incidents found, 'agent5' if found",
+        description="Top 5 similar incidents ranked by similarity score.",
     )
 
 
 class Agent4Response(BaseModel):
-    status: WorkflowStatus
-    validation_notes: list[str]
-    is_ready_for_review: bool
+    success: bool
+    message: str
+    saved: bool
+    saved_incident_number: str | None = None
+    ingested_to_qdrant: bool
+    datafix_saved: bool
+    error: str | None = None
 
 
 class Agent5Response(BaseModel):
