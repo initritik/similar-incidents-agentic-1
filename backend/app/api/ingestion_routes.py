@@ -50,7 +50,16 @@ def load_all_incidents() -> IngestionSummary:
         return summary
     except Exception as e:
         logger.error(f"Ingestion failed: {str(e)}")
-        raise
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={
+                "message": (
+                    f"Ingestion failed: {str(e)}. "
+                    "Check that QDRANT_URL points to a running Qdrant instance and "
+                    "that QDRANT_API_KEY is valid."
+                )
+            },
+        )
 
 
 @router.post(
@@ -172,7 +181,9 @@ def ingestion_status() -> JSONResponse:
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content={
-                "message": f"Cannot connect to Qdrant: {str(e)}. "
-                "Check QDRANT_URL, QDRANT_API_KEY, and OPENAI_API_KEY in .env"
+                "message": (
+                    f"Cannot connect to Qdrant: {str(e)}. "
+                    "Check QDRANT_URL, QDRANT_API_KEY, and OPENAI_API_KEY in .env"
+                ),
             },
         )

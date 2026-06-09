@@ -1,5 +1,6 @@
 import logging
 import os
+from urllib.parse import urlparse
 
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
@@ -19,6 +20,21 @@ class QdrantService:
             raise ValueError(
                 "QDRANT_URL and QDRANT_API_KEY environment variables must be set. "
                 "Please configure them in .env file."
+            )
+
+        parsed_url = urlparse(url)
+        if parsed_url.scheme not in {"http", "https"} or not parsed_url.netloc:
+            raise ValueError(
+                f"Invalid QDRANT_URL '{url}'. Use a full HTTP(S) URL, for example "
+                "'https://your-cluster.qdrant.io' for Qdrant Cloud or "
+                "'http://localhost:6333' for a local Qdrant instance."
+            )
+
+        if parsed_url.hostname in {"localhost", "127.0.0.1"}:
+            logger.warning(
+                "QDRANT_URL points to a local Qdrant instance (%s). "
+                "Make sure Qdrant is actually running on that host and port.",
+                url,
             )
 
         self.client = QdrantClient(url=url, api_key=api_key)
@@ -114,12 +130,27 @@ class QdrantService:
             logger.debug(
                 f"Searching similar incidents with threshold {score_threshold}"
             )
-            results = self.client.search(
-                collection_name=self.collection_name,
-                query_vector=query_embedding,
-                limit=limit,
-                score_threshold=score_threshold,
-            )
+
+            # Newer qdrant-client versions expose vector search through query_points.
+            # Older versions used search(). Keep both so the app works across versions.
+            if hasattr(self.client, "query_points"):
+                results = self.client.query_points(
+                    collection_name=self.collection_name,
+                    query=query_embedding,
+                    limit=limit,
+                    score_threshold=score_threshold,
+                    with_payload=True,
+                    with_vectors=False,
+                )
+                results = getattr(results, "points", results)
+            else:
+                results = self.client.search(
+                    collection_name=self.collection_name,
+                    query_vector=query_embedding,
+                    limit=limit,
+                    score_threshold=score_threshold,
+                )
+
             logger.info(f"Found {len(results)} similar incidents")
             return results
         except Exception as e:
