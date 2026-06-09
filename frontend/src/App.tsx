@@ -1,11 +1,10 @@
 import { AppLayout } from "@/layouts/AppLayout";
-import { Home } from "@/pages/Home";
+import IncidentResolutionPage from "@/pages/IncidentResolutionPage";
 
 export default function App() {
   return (
     <AppLayout>
-      <Home />
+      <IncidentResolutionPage />
     </AppLayout>
   );
 }
-

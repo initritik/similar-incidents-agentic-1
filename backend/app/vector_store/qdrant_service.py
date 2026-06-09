@@ -13,7 +13,7 @@ class QdrantService:
     def __init__(self):
         url = os.getenv("QDRANT_URL")
         api_key = os.getenv("QDRANT_API_KEY")
-        collection_name = os.getenv("QDRANT_COLLECTION_NAME", "incident_resolution_collection")
+        collection_name = os.getenv("QDRANT_COLLECTION_NAME", "servicenow_incidents")
 
         if not url or not api_key:
             raise ValueError(
