@@ -1,6 +1,9 @@
 import type {
   StartWorkflowRequest,
   WorkflowExecution,
+  SSEEventType,
+  SSEAgentStatusUpdate,
+  SSEAgentResult,
 } from "@/types/workflow";
 import {
   normalizeWorkflow,
@@ -35,12 +38,10 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
       ...init,
     });
   } catch (err) {
-    // Network or fetch error
     const message = err instanceof Error ? err.message : "Network error";
     throw new APIError(0, `Network error: ${message}`, err);
   }
 
-  // Parse response body
   let body: unknown;
   try {
     body = await res.json();
@@ -48,7 +49,6 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     body = null;
   }
 
-  // Handle error responses
   if (!res.ok) {
     const message = extractErrorMessage(body);
     throw new APIError(res.status, message, body);
@@ -57,16 +57,123 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return body as T;
 }
 
+// ── SSE streaming callbacks ───────────────────────────────────────────────────
+
+export interface SSECallbacks {
+  onAgentStatusUpdate?: (data: SSEAgentStatusUpdate) => void;
+  onAgentResult?: (data: SSEAgentResult) => void;
+  onWorkflowDone?: (data: WorkflowExecution) => void;
+  onError?: (message: string) => void;
+}
+
+/**
+ * Start the workflow pipeline and consume Server-Sent Events.
+ *
+ * Returns a cancel function — call it to abort the stream early.
+ */
+function streamWorkflow(
+  payload: StartWorkflowRequest,
+  callbacks: SSECallbacks,
+): () => void {
+  const controller = new AbortController();
+
+  (async () => {
+    let res: Response;
+    try {
+      res = await fetch(`${BASE_URL}/api/workflows/stream`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...payload,
+          incident_number: payload.incident_number.toUpperCase(),
+        }),
+        signal: controller.signal,
+      });
+    } catch (err) {
+      if ((err as Error).name !== "AbortError") {
+        callbacks.onError?.("Network error: " + (err instanceof Error ? err.message : String(err)));
+      }
+      return;
+    }
+
+    if (!res.ok || !res.body) {
+      const body = await res.json().catch(() => null);
+      callbacks.onError?.(extractErrorMessage(body) || `HTTP ${res.status}`);
+      return;
+    }
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+
+    while (true) {
+      let done: boolean;
+      let value: Uint8Array | undefined;
+
+      try {
+        ({ done, value } = await reader.read());
+      } catch {
+        break;
+      }
+
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+
+      // SSE messages are separated by double newlines
+      const messages = buffer.split(/\n\n/);
+      buffer = messages.pop() ?? "";
+
+      for (const raw of messages) {
+        if (!raw.trim()) continue;
+
+        let eventType: SSEEventType = "agent_status_update";
+        let dataStr = "";
+
+        for (const line of raw.split("\n")) {
+          if (line.startsWith("event: ")) {
+            eventType = line.slice(7).trim() as SSEEventType;
+          } else if (line.startsWith("data: ")) {
+            dataStr = line.slice(6).trim();
+          }
+        }
+
+        if (!dataStr) continue;
+
+        let parsed: unknown;
+        try {
+          parsed = JSON.parse(dataStr);
+        } catch {
+          continue;
+        }
+
+        switch (eventType) {
+          case "agent_status_update":
+            callbacks.onAgentStatusUpdate?.(parsed as SSEAgentStatusUpdate);
+            break;
+          case "agent_result":
+            callbacks.onAgentResult?.(parsed as SSEAgentResult);
+            break;
+          case "workflow_done":
+            callbacks.onWorkflowDone?.(normalizeWorkflow(parsed as WorkflowExecution));
+            break;
+          case "error":
+            callbacks.onError?.((parsed as { message: string }).message ?? "Unknown stream error");
+            break;
+          default:
+            break;
+        }
+      }
+    }
+  })();
+
+  return () => controller.abort();
+}
+
 export const workflowService = {
   /**
-   * Start a new workflow for the given incident number.
-   *
-   * @param payload StartWorkflowRequest with incident_number
-   * @returns WorkflowExecution with initial state and workflow_id
-   * @throws APIError on validation or server errors
+   * Start a new workflow for the given incident number (non-streaming, returns final state).
    */
   async start(payload: StartWorkflowRequest): Promise<WorkflowExecution> {
-    // Validate incident number locally first
     const incidentRegex = /^INC\d{6}$/;
     if (!incidentRegex.test(payload.incident_number.toUpperCase())) {
       throw new APIError(
@@ -86,27 +193,15 @@ export const workflowService = {
           }),
         },
       );
-
-      // Normalize the workflow response to ensure all fields are properly typed
       return normalizeWorkflow(response);
     } catch (err) {
-      if (err instanceof APIError) {
-        throw err;
-      }
-      throw new APIError(
-        500,
-        "Failed to start workflow",
-        err,
-      );
+      if (err instanceof APIError) throw err;
+      throw new APIError(500, "Failed to start workflow", err);
     }
   },
 
   /**
    * Fetch the latest state of a workflow by ID.
-   *
-   * @param workflowId UUID of the workflow
-   * @returns WorkflowExecution with current state
-   * @throws APIError if workflow not found or fetch fails
    */
   async get(workflowId: string): Promise<WorkflowExecution> {
     if (!workflowId || typeof workflowId !== "string") {
@@ -117,8 +212,6 @@ export const workflowService = {
       const response = await request<WorkflowExecution>(
         `/api/workflows/${encodeURIComponent(workflowId)}`,
       );
-
-      // Normalize the workflow response
       return normalizeWorkflow(response);
     } catch (err) {
       if (err instanceof APIError) {
@@ -131,11 +224,12 @@ export const workflowService = {
         }
         throw err;
       }
-      throw new APIError(
-        500,
-        "Failed to fetch workflow status",
-        err,
-      );
+      throw new APIError(500, "Failed to fetch workflow status", err);
     }
   },
+
+  /**
+   * Stream a workflow via SSE. Returns a cancel function.
+   */
+  stream: streamWorkflow,
 };

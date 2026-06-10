@@ -23,11 +23,14 @@ const EMPTY_AGENT_STATUSES = [
 }));
 
 export function Home() {
-  const { workflow, isLoading, isPolling, error, run, reset } =
+  const { workflow, isLoading, isStreaming, error, agentLogs, run, reset } =
     useWorkflowRunner();
 
   const diagramStatuses =
     workflow?.agent_statuses ?? EMPTY_AGENT_STATUSES;
+
+  // Show the "busy" state while loading or streaming
+  const isBusy = isLoading || isStreaming;
 
   return (
     <div className="flex flex-1 flex-col gap-8">
@@ -55,7 +58,7 @@ export function Home() {
         <IncidentSearchForm
           onSubmit={run}
           onReset={reset}
-          isLoading={isLoading || isPolling}
+          isLoading={isBusy}
           hasResult={!!workflow}
         />
       </section>
@@ -76,7 +79,7 @@ export function Home() {
         />
       )}
 
-      {/* ── Loading skeleton while waiting for first response ─────────── */}
+      {/* ── Loading skeleton while waiting for first SSE event ─────────── */}
       {isLoading && !workflow && (
         <div className="space-y-3" aria-busy aria-label="Starting workflow">
           <div className="h-10 w-full animate-pulse rounded-lg bg-muted" />
@@ -84,11 +87,23 @@ export function Home() {
         </div>
       )}
 
+      {/* ── Streaming indicator banner ─────────────────────────────────── */}
+      {isStreaming && workflow && (
+        <div
+          className="flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2 text-sm text-blue-700 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-300"
+          role="status"
+          aria-live="polite"
+        >
+          <span className="size-2 rounded-full bg-blue-500 animate-pulse" aria-hidden />
+          Pipeline running — receiving live agent updates…
+        </div>
+      )}
+
       {/* ── Workflow results ───────────────────────────────────────────── */}
       {workflow && (
         <div className="space-y-5">
           <WorkflowSummaryCard workflow={workflow} />
-          <AgentTabs workflow={workflow} />
+          <AgentTabs workflow={workflow} agentLogs={agentLogs} />
         </div>
       )}
     </div>

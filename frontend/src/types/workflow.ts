@@ -119,3 +119,25 @@ export interface StartWorkflowRequest {
   datafix_description?: string | null;
   datafix_code?: string | null;
 }
+
+// ─── SSE Event payloads ───────────────────────────────────────────────────────
+
+export type SSEEventType =
+  | "workflow_created"
+  | "agent_status_update"
+  | "agent_result"
+  | "workflow_done"
+  | "error";
+
+export interface SSEAgentStatusUpdate {
+  workflow_id: string;
+  overall_status: WorkflowStatus;
+  agent: WorkflowAgentStatus;
+}
+
+export interface SSEAgentResult {
+  workflow_id: string;
+  agent_name: string;
+  agent_key: string;
+  result: Agent1Response | Agent2Response | Agent3Response | Agent4Response | Agent5Response;
+}
