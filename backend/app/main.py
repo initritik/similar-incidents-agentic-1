@@ -1,5 +1,6 @@
 import logging
 import os
+from fastapi.middleware.cors import CORSMiddleware
 
 # Load environment variables at startup
 from dotenv import load_dotenv
@@ -25,6 +26,20 @@ from app.api import (
 )
 
 app = FastAPI(title="Incident Resolution Assistant API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:8000",
+    ],
+    # allow_origins=[
+    #     "https://similar-incidents-temp-1.vercel.app",
+    # ],
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["*"],
+    allow_credentials=False,
+)
 
 app.include_router(incident_router)
 app.include_router(datafix_router)
