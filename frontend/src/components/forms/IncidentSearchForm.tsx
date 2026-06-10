@@ -74,7 +74,7 @@ export function IncidentSearchForm({
               value={value}
               onChange={(e) => setValue(e.target.value.toUpperCase())}
               onBlur={() => setTouched(true)}
-              placeholder="INC0000010"
+              placeholder="INC000005"
               aria-describedby={validationError ? "incident-id-error" : undefined}
               aria-invalid={!!validationError}
               disabled={isLoading}
