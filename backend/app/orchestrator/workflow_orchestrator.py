@@ -5,6 +5,7 @@ from app.agents import (
     Agent1DataIntegrityChecker,
     Agent3SimilarIncidentAnalyzer,
     Agent4ResolutionCapture,
+    Agent5ResolutionRecommendation,
 )
 from app.agents.agent2_similarity_search import Agent2SimilaritySearch
 from app.models.enums import WorkflowStatus
@@ -22,6 +23,7 @@ class WorkflowOrchestrator:
         self.agent2: Agent2SimilaritySearch | None = None
         self.agent3 = Agent3SimilarIncidentAnalyzer()
         self.agent4 = Agent4ResolutionCapture()
+        self.agent5 = Agent5ResolutionRecommendation()
 
     def start_workflow(
         self,
@@ -34,7 +36,7 @@ class WorkflowOrchestrator:
         workflow = self.status_store.create_workflow(incident_number)
         logger.info("Workflow created")
 
-        # Execute Agent 1
+        # ── Agent 1 ──────────────────────────────────────────────────────────
         workflow = self.execute_agent1(workflow.workflow_id, incident_number)
 
         if workflow.overall_status == WorkflowStatus.FAILED:
@@ -46,7 +48,7 @@ class WorkflowOrchestrator:
             logger.info("Workflow completed")
             return workflow
 
-        # If Agent 1 succeeded, execute Agent 2
+        # ── Agent 2 ──────────────────────────────────────────────────────────
         workflow = self.execute_agent2(workflow.workflow_id, incident_number)
 
         if workflow.overall_status == WorkflowStatus.FAILED:
@@ -58,7 +60,7 @@ class WorkflowOrchestrator:
             logger.info("Workflow completed")
             return workflow
 
-        # If Agent 2 succeeded, execute Agent 3
+        # ── Agent 3 ──────────────────────────────────────────────────────────
         workflow = self.execute_agent3(workflow.workflow_id)
 
         if workflow.overall_status == WorkflowStatus.FAILED:
@@ -81,33 +83,37 @@ class WorkflowOrchestrator:
         )
 
         if similar_incidents_found:
+            # ── Agent 5 (similar incidents path) ─────────────────────────────
             workflow = self._skip_agents(
                 workflow.workflow_id,
-                ("Agent 4", "Agent 5"),
-                "Skipped because similar incidents were found.",
+                ("Agent 4",),
+                "Skipped because similar incidents were found – Agent 5 will handle recommendation.",
             )
-            logger.info("Workflow completed")
-            return workflow
-
-        workflow = self.execute_agent4(
-            workflow_id=workflow.workflow_id,
-            incident_number=incident_number,
-            provide_resolution=provide_resolution,
-            resolution_notes=resolution_notes,
-            datafix_description=datafix_description,
-            datafix_code=datafix_code,
-        )
-
-        # Agent 5 is intentionally not implemented yet.
-        workflow = self._skip_agents(
-            workflow.workflow_id,
-            ("Agent 5",),
-            "Pending future implementation.",
-        )
+            workflow = self.execute_agent5(
+                workflow_id=workflow.workflow_id,
+                incident_number=incident_number,
+            )
+        else:
+            # ── Agent 4 (no similar incidents path) ──────────────────────────
+            workflow = self.execute_agent4(
+                workflow_id=workflow.workflow_id,
+                incident_number=incident_number,
+                provide_resolution=provide_resolution,
+                resolution_notes=resolution_notes,
+                datafix_description=datafix_description,
+                datafix_code=datafix_code,
+            )
+            workflow = self._skip_agents(
+                workflow.workflow_id,
+                ("Agent 5",),
+                "Skipped because no similar incidents were found.",
+            )
 
         logger.info("Workflow completed")
         stored_workflow = self.status_store.get_workflow(workflow.workflow_id)
         return stored_workflow if stored_workflow is not None else workflow
+
+    # ── Individual agent executors ────────────────────────────────────────────
 
     def execute_agent1(self, workflow_id: str, incident_number: str) -> WorkflowExecution:
         logger.info("Agent 1 started")
@@ -150,7 +156,6 @@ class WorkflowOrchestrator:
 
         if workflow is None:
             raise ValueError("Workflow not found.")
-
         return workflow
 
     def execute_agent2(self, workflow_id: str, incident_number: str) -> WorkflowExecution:
@@ -165,24 +170,22 @@ class WorkflowOrchestrator:
         )
 
         try:
-            # Get the validated incident from Agent 1
             incident = IncidentService.get_incident_by_number(incident_number)
             if incident is None:
                 raise ValueError(f"Incident {incident_number} not found")
 
-            # Search for similar incidents
             if self.agent2 is None:
                 self.agent2 = Agent2SimilaritySearch()
             result = self.agent2.search_similar_incidents(incident)
 
+            self.status_store.store_agent_result(
+                workflow_id=workflow_id,
+                agent_name="Agent 2",
+                result=result.model_dump(),
+            )
+
             if result.success:
                 logger.info(f"Agent 2 completed. Found {result.match_count} similar incidents")
-                # Store the result for Agent 3
-                self.status_store.store_agent_result(
-                    workflow_id=workflow_id,
-                    agent_name="Agent 2",
-                    result=result.model_dump(),
-                )
                 workflow = self.status_store.update_agent_status(
                     workflow_id=workflow_id,
                     agent_name="Agent 2",
@@ -193,11 +196,6 @@ class WorkflowOrchestrator:
                 )
             else:
                 logger.error("Agent 2 failed")
-                self.status_store.store_agent_result(
-                    workflow_id=workflow_id,
-                    agent_name="Agent 2",
-                    result=result.model_dump(),
-                )
                 workflow = self.status_store.update_agent_status(
                     workflow_id=workflow_id,
                     agent_name="Agent 2",
@@ -220,7 +218,6 @@ class WorkflowOrchestrator:
 
         if workflow is None:
             raise ValueError("Workflow not found.")
-
         return workflow
 
     def execute_agent3(self, workflow_id: str) -> WorkflowExecution:
@@ -235,25 +232,22 @@ class WorkflowOrchestrator:
         )
 
         try:
-            # Get the Agent 2 results from workflow state
             agent2_results = self.status_store.get_agent_result(workflow_id, "Agent 2")
-
             if agent2_results is None:
                 raise ValueError("Agent 2 results not found in workflow state")
 
-            # Process with Agent 3
             result = self.agent3.analyze(agent2_results)
+
+            self.status_store.store_agent_result(
+                workflow_id=workflow_id,
+                agent_name="Agent 3",
+                result=result.model_dump(),
+            )
 
             if result.success:
                 logger.info(
                     f"Agent 3 completed. Found {result.match_count} top match(es). "
                     f"similar_incidents_found={result.similar_incidents_found}."
-                )
-                # Store the result for future agents
-                self.status_store.store_agent_result(
-                    workflow_id=workflow_id,
-                    agent_name="Agent 3",
-                    result=result.model_dump(),
                 )
                 workflow = self.status_store.update_agent_status(
                     workflow_id=workflow_id,
@@ -265,11 +259,6 @@ class WorkflowOrchestrator:
                 )
             else:
                 logger.error("Agent 3 failed")
-                self.status_store.store_agent_result(
-                    workflow_id=workflow_id,
-                    agent_name="Agent 3",
-                    result=result.model_dump(),
-                )
                 workflow = self.status_store.update_agent_status(
                     workflow_id=workflow_id,
                     agent_name="Agent 3",
@@ -292,7 +281,6 @@ class WorkflowOrchestrator:
 
         if workflow is None:
             raise ValueError("Workflow not found.")
-
         return workflow
 
     def execute_agent4(
@@ -375,11 +363,80 @@ class WorkflowOrchestrator:
 
         if workflow is None:
             raise ValueError("Workflow not found.")
-
         return workflow
 
-    def execute_agent5(self, workflow_id: str, incident_number: str) -> None:
-        raise NotImplementedError("Agent 5 has not been implemented yet.")
+    def execute_agent5(self, workflow_id: str, incident_number: str) -> WorkflowExecution:
+        logger.info("Agent5 started")
+        self.status_store.update_agent_status(
+            workflow_id=workflow_id,
+            agent_name="Agent 5",
+            status=WorkflowStatus.RUNNING,
+            current_task="Generating resolution recommendation from similar resolved incidents.",
+            message="Agent5 started.",
+            started_at=datetime.now(UTC),
+        )
+
+        try:
+            # Retrieve Agent 1 output for original incident context
+            agent1_results = self.status_store.get_agent_result(workflow_id, "Agent 1")
+            original_incident: dict = {}
+            if agent1_results and agent1_results.get("incident"):
+                original_incident = agent1_results["incident"]
+
+            # Retrieve Agent 3 output (top matches)
+            agent3_results = self.status_store.get_agent_result(workflow_id, "Agent 3")
+            if agent3_results is None:
+                raise ValueError("Agent 3 results not found in workflow state.")
+
+            logger.info("Fetching resolved similar incidents")
+            result = self.agent5.recommend(
+                original_incident=original_incident,
+                agent3_results=agent3_results,
+            )
+
+            self.status_store.store_agent_result(
+                workflow_id=workflow_id,
+                agent_name="Agent 5",
+                result=result.model_dump(),
+            )
+
+            if result.success:
+                logger.info("Agent5 completed")
+                workflow = self.status_store.update_agent_status(
+                    workflow_id=workflow_id,
+                    agent_name="Agent 5",
+                    status=WorkflowStatus.COMPLETED,
+                    current_task="Resolution recommendation generated.",
+                    message=result.message,
+                    completed_at=datetime.now(UTC),
+                )
+            else:
+                logger.error("Agent5 failed")
+                workflow = self.status_store.update_agent_status(
+                    workflow_id=workflow_id,
+                    agent_name="Agent 5",
+                    status=WorkflowStatus.FAILED,
+                    current_task="Resolution recommendation failed.",
+                    message=result.message,
+                    completed_at=datetime.now(UTC),
+                )
+
+        except Exception as e:
+            logger.error(f"Agent5 failed: {str(e)}")
+            workflow = self.status_store.update_agent_status(
+                workflow_id=workflow_id,
+                agent_name="Agent 5",
+                status=WorkflowStatus.FAILED,
+                current_task="Resolution recommendation failed.",
+                message=f"Error: {str(e)}",
+                completed_at=datetime.now(UTC),
+            )
+
+        if workflow is None:
+            raise ValueError("Workflow not found.")
+        return workflow
+
+    # ── Helpers ───────────────────────────────────────────────────────────────
 
     def _skip_agents(
         self,
@@ -404,4 +461,3 @@ class WorkflowOrchestrator:
                 raise ValueError("Workflow not found.")
 
         return workflow
-

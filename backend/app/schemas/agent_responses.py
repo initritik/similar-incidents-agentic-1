@@ -61,6 +61,13 @@ class Agent4Response(BaseModel):
 
 
 class Agent5Response(BaseModel):
-    status: WorkflowStatus
-    final_resolution_notes: str | None = None
-    audit_notes: list[str]
+    """Agent 5 resolution recommendation response."""
+
+    success: bool
+    message: str
+    recommended_resolution: str
+    recommended_datafix: str
+    source_incident_numbers: list[str] = Field(default_factory=list)
+    source_resolution_notes: list[str] = Field(default_factory=list)
+    source_datafix_ids: list[str] = Field(default_factory=list)
+    confidence_summary: str
