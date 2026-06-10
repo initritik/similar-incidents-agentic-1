@@ -26,49 +26,69 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  /* ── Royal London brand tokens ───────────────────────────── */
+  --color-rl-navy:        var(--rl-navy);
+  --color-rl-navy-mid:    var(--rl-navy-mid);
+  --color-rl-navy-light:  var(--rl-navy-light);
+  --color-rl-gold:        var(--rl-gold);
+  --color-rl-gold-light:  var(--rl-gold-light);
+  --color-rl-ivory:       var(--rl-ivory);
+  --color-rl-ivory-dark:  var(--rl-ivory-dark);
 }
 
 :root {
   --radius: 0.5rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+
+  /* Royal London brand colours */
+  --rl-navy:        #0C1F3F;
+  --rl-navy-mid:    #1A3461;
+  --rl-navy-light:  #243F72;
+  --rl-gold:        #C9A84C;
+  --rl-gold-light:  #E5C97B;
+  --rl-ivory:       #F8F6F1;
+  --rl-ivory-dark:  #EDE9DF;
+
+  /* shadcn / Tailwind semantic tokens mapped to RL palette */
+  --background:            #F8F6F1;
+  --foreground:            #0C1F3F;
+  --card:                  #FFFFFF;
+  --card-foreground:       #0C1F3F;
+  --popover:               #FFFFFF;
+  --popover-foreground:    #0C1F3F;
+  --primary:               #0C1F3F;
+  --primary-foreground:    #F8F6F1;
+  --secondary:             #EDE9DF;
+  --secondary-foreground:  #0C1F3F;
+  --muted:                 #EDE9DF;
+  --muted-foreground:      #5A6A82;
+  --accent:                #C9A84C;
+  --accent-foreground:     #0C1F3F;
+  --destructive:           oklch(0.577 0.245 27.325);
+  --border:                #D8D2C4;
+  --input:                 #D8D2C4;
+  --ring:                  #C9A84C;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --background:            #0C1F3F;
+  --foreground:            #F8F6F1;
+  --card:                  #1A3461;
+  --card-foreground:       #F8F6F1;
+  --popover:               #1A3461;
+  --popover-foreground:    #F8F6F1;
+  --primary:               #C9A84C;
+  --primary-foreground:    #0C1F3F;
+  --secondary:             #243F72;
+  --secondary-foreground:  #F8F6F1;
+  --muted:                 #243F72;
+  --muted-foreground:      #9AAEC4;
+  --accent:                #C9A84C;
+  --accent-foreground:     #0C1F3F;
+  --destructive:           oklch(0.704 0.191 22.216);
+  --border:                rgba(255,255,255,0.12);
+  --input:                 rgba(255,255,255,0.15);
+  --ring:                  #C9A84C;
 }
 
 @layer base {
@@ -79,8 +99,22 @@
   body {
     @apply bg-background text-foreground;
     font-family:
-      Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+      "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
       "Segoe UI", sans-serif;
   }
+
+  /* Smooth scrollbar for the app */
+  ::-webkit-scrollbar        { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track  { background: transparent; }
+  ::-webkit-scrollbar-thumb  { background: var(--rl-navy-light); border-radius: 99px; }
 }
 
+/* ── Gold shimmer for running state ─────────────────────────── */
+@keyframes gold-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(201,168,76,0.35); }
+  50%       { box-shadow: 0 0 0 6px rgba(201,168,76,0); }
+}
+
+.rl-running-ring {
+  animation: gold-pulse 1.8s ease-in-out infinite;
+}

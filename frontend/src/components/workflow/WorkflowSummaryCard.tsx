@@ -20,7 +20,6 @@ export function WorkflowSummaryCard({
     .reverse()
     .find((a) => a.completed_at);
 
-  // Calculate total workflow duration if workflow is complete
   const firstStarted = workflow.agent_statuses.find((a) => a.started_at);
   const workflowDuration =
     workflow.overall_status === "COMPLETED" ||
@@ -31,39 +30,52 @@ export function WorkflowSummaryCard({
   return (
     <div
       className={cn(
-        "flex flex-wrap items-center gap-x-6 gap-y-2 rounded-lg border bg-card px-5 py-3 text-sm shadow-sm",
+        "flex flex-wrap items-center gap-x-5 gap-y-2",
+        "rounded-lg border border-border bg-card px-4 py-3 shadow-sm",
+        "text-sm",
         className,
       )}
     >
+      {/* Workflow ID */}
       <div className="flex items-center gap-1.5 text-muted-foreground">
-        <Hash className="size-3.5" aria-hidden />
-        <span className="font-mono text-xs">{workflow.workflow_id.slice(0, 8)}&hellip;</span>
+        <Hash className="size-3 text-rl-gold/70" aria-hidden />
+        <span className="font-mono text-[11px]">
+          {workflow.workflow_id.slice(0, 8)}&hellip;
+        </span>
       </div>
 
-      <div className="flex items-center gap-1.5 text-muted-foreground">
-        <Layers className="size-3.5" aria-hidden />
-        <span className="font-mono text-xs font-medium text-foreground">
+      {/* Incident number */}
+      <div className="flex items-center gap-1.5">
+        <Layers className="size-3 text-rl-gold/70" aria-hidden />
+        <span className="font-mono text-[11px] font-semibold text-foreground">
           {workflow.incident_number}
         </span>
       </div>
 
+      {/* Status pill */}
       <StatusPill status={workflow.overall_status} />
 
+      {/* Active agent */}
       {activeAgent && (
-        <span className="text-xs text-muted-foreground">
-          Active: <strong className="text-foreground">{activeAgent.agent_name}</strong>
+        <span className="text-[11px] text-muted-foreground">
+          Active:{" "}
+          <strong className="font-semibold text-foreground">
+            {activeAgent.agent_name}
+          </strong>
         </span>
       )}
 
+      {/* Last updated */}
       {lastCompleted?.completed_at && (
-        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <Clock className="size-3.5" aria-hidden />
+        <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+          <Clock className="size-3" aria-hidden />
           <span>Updated {formatTime(lastCompleted.completed_at)}</span>
         </div>
       )}
 
+      {/* Duration */}
       {workflowDuration !== null && (
-        <span className="text-xs text-muted-foreground">
+        <span className="text-[11px] text-muted-foreground">
           Duration: {formatDuration(workflowDuration)}
         </span>
       )}

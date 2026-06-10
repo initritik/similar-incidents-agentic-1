@@ -1,27 +1,49 @@
 import type { PropsWithChildren } from "react";
-import { Bot } from "lucide-react";
+import { Shield } from "lucide-react";
 
 export function AppLayout({ children }: PropsWithChildren) {
   return (
     <div className="min-h-screen bg-background">
-      {/* Top navigation bar */}
+      {/* ── Top navigation ──────────────────────────────────────── */}
       <nav
-        className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+        className="sticky top-0 z-20 border-b border-border/60 bg-rl-navy shadow-[0_2px_12px_rgba(12,31,63,0.18)]"
         aria-label="Application navigation"
       >
-        <div className="mx-auto flex h-14 w-full max-w-7xl items-center gap-3 px-6">
-          <Bot className="size-5 text-foreground" aria-hidden />
-          <span className="text-sm font-semibold text-foreground">
-            Incident Resolution Assistant
+        <div className="mx-auto flex h-14 w-full max-w-screen-2xl items-center gap-3 px-6">
+          {/* Logo mark */}
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-8 w-8 items-center justify-center rounded bg-rl-gold/20 ring-1 ring-rl-gold/40">
+              <Shield className="size-4 text-rl-gold" aria-hidden />
+            </div>
+            <div className="flex flex-col leading-tight">
+              <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-rl-gold">
+                Royal London
+              </span>
+              <span className="text-[10px] text-white/50 tracking-wide">
+                Incident Resolution
+              </span>
+            </div>
+          </div>
+
+          {/* Divider */}
+          <div className="mx-3 h-5 w-px bg-white/15" />
+
+          <span className="text-xs font-medium text-white/70">
+            AI Resolution Assistant
           </span>
-          <span className="ml-2 rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+
+          {/* Spacer */}
+          <div className="flex-1" />
+
+          {/* POC badge */}
+          <span className="rounded-full border border-rl-gold/30 bg-rl-gold/10 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-rl-gold">
             POC
           </span>
         </div>
       </nav>
 
-      {/* Page content */}
-      <main className="mx-auto flex w-full max-w-7xl flex-col px-6 py-8">
+      {/* ── Page content ────────────────────────────────────────── */}
+      <main className="mx-auto flex w-full max-w-screen-2xl flex-col px-6 py-6">
         {children}
       </main>
     </div>

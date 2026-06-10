@@ -6,15 +6,12 @@ interface StatusPillProps {
   className?: string;
 }
 
-const config: Record<
-  WorkflowStatus,
-  { label: string; className: string }
-> = {
-  PENDING:   { label: "Pending",    className: "bg-muted text-muted-foreground" },
-  RUNNING:   { label: "Running",    className: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300" },
-  COMPLETED: { label: "Completed",  className: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300" },
-  FAILED:    { label: "Failed",     className: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300" },
-  SKIPPED:   { label: "Skipped",    className: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300" },
+const config: Record<WorkflowStatus, { label: string; className: string }> = {
+  PENDING:   { label: "Pending",   className: "bg-muted text-muted-foreground border border-border" },
+  RUNNING:   { label: "Running",   className: "bg-rl-gold/10 text-rl-navy border border-rl-gold/40 dark:bg-rl-gold/20 dark:text-rl-gold" },
+  COMPLETED: { label: "Completed", className: "bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-800" },
+  FAILED:    { label: "Failed",    className: "bg-red-50 text-red-700 border border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800" },
+  SKIPPED:   { label: "Skipped",   className: "bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800" },
 };
 
 export function StatusPill({ status, className }: StatusPillProps) {
@@ -22,13 +19,13 @@ export function StatusPill({ status, className }: StatusPillProps) {
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium",
+        "inline-flex items-center gap-1 rounded-full px-2 py-px text-[10px] font-semibold",
         colorClass,
         className,
       )}
     >
       {status === "RUNNING" && (
-        <span className="size-1.5 animate-pulse rounded-full bg-blue-500" aria-hidden />
+        <span className="size-1.5 animate-pulse rounded-full bg-rl-gold" aria-hidden />
       )}
       {label}
     </span>
