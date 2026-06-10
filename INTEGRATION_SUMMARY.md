@@ -360,23 +360,43 @@ const POLL_CONFIG = {
 
 ## Demo Readiness
 
+⚠️ **CRITICAL PREREQUISITE:** Vector database must be set up FIRST!
+
+**Before you can run any demo:**
+1. Follow [SETUP_VECTOR_DB.md](./SETUP_VECTOR_DB.md) to configure Qdrant and load mock data
+2. Run: `python scripts/load_mock_data_to_qdrant.py`
+3. Verify backend can connect to Qdrant
+
+**If you skip this step, you'll get:**
+- "An unexpected error occurred" error on every workflow start
+- See [TROUBLESHOOTING_ERROR.md](./TROUBLESHOOTING_ERROR.md) for details
+
+---
+
 **Start Here:** [DEMO_VALIDATION.md](./DEMO_VALIDATION.md)
 
 **Quick Validation (5 minutes):**
-1. Start backend and frontend
-2. Run Scenario A (INC000001) - should complete successfully
-3. Check timestamps display correctly
-4. Verify all 5 agents show correct statuses
+1. Ensure vector DB is set up (see SETUP_VECTOR_DB.md)
+2. Start backend and frontend
+3. Run Scenario A (INC000001) - should complete successfully
+4. Check timestamps display correctly
+5. Verify all 5 agents show correct statuses
 
 **Full Validation (15 minutes):**
-1. Run all 5 scenarios from DEMO_VALIDATION.md
-2. Check error messages are clear
-3. Verify polling stops on completion
-4. Test network resilience (optional)
+1. Complete vector DB setup
+2. Run all 5 scenarios from DEMO_VALIDATION.md
+3. Check error messages are clear
+4. Verify polling stops on completion
+5. Test network resilience (optional)
 
 ---
 
 ## Troubleshooting
+
+### Issue: "An unexpected error occurred" on every workflow start
+**Cause:** Vector database (Qdrant) not set up or mock data not loaded
+**Solution:** Follow [SETUP_VECTOR_DB.md](./SETUP_VECTOR_DB.md) - this is the most common issue
+- See detailed instructions in [TROUBLESHOOTING_ERROR.md](./TROUBLESHOOTING_ERROR.md)
 
 ### Issue: Datetime fields show "Invalid Date"
 **Cause:** ISO string not parsing correctly
@@ -427,5 +447,6 @@ const POLL_CONFIG = {
 ---
 
 **Version:** 1.0 - Integration & Contract Alignment Complete
-**Date:** 2024
-**Status:** Demo Ready ✅
+**Date:** 2026
+**Status:** Code Complete ✅ | Demo Ready after Vector DB setup
+**REQUIRED BEFORE DEMO:** Complete [SETUP_VECTOR_DB.md](./SETUP_VECTOR_DB.md)

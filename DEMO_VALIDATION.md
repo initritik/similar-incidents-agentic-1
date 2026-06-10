@@ -1,13 +1,21 @@
 # Demo Validation Checklist
 
-## Pre-Demo Setup
+## Pre-Demo Setup - REQUIRED FIRST
 
-1. **Backend Running**
+⚠️ **IMPORTANT:** Complete setup in [SETUP_VECTOR_DB.md](./SETUP_VECTOR_DB.md) before running demo!
+
+1. **Environment Configuration**
+   - OPENAI_API_KEY set in backend/.env
+   - QDRANT_URL set in backend/.env
+   - QDRANT_API_KEY set in backend/.env
+   - Mock data ingested: `python scripts/load_mock_data_to_qdrant.py`
+
+2. **Backend Running**
    - FastAPI server running on `http://localhost:8000`
-   - Qdrant vector DB running and available
-   - Mock data properly loaded
+   - Qdrant vector DB connected and available
+   - Mock data loaded into Qdrant (run ingestion script if not done)
 
-2. **Frontend Running**
+3. **Frontend Running**
    - React dev server running on `http://localhost:5173`
    - TypeScript compilation successful (no errors)
    - All dependencies installed
