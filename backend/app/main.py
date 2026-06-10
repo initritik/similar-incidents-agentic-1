@@ -27,15 +27,28 @@ from app.api import (
 
 app = FastAPI(title="Incident Resolution Assistant API")
 
+# Configure CORS based on environment
+app_env = os.getenv("APP_ENV", "development")
+frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
+
+if app_env == "production":
+    allow_origins = [
+        frontend_url,
+        "https://similar-incidents-agentic-1.onrender.com",  # Replace with actual Render URL
+    ]
+else:
+    # Development: allow localhost and common ports
+    allow_origins = [
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:3000",
+        "http://localhost:8000",
+    ]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://localhost:8000",
-    ],
-    # allow_origins=[
-    #     "https://similar-incidents-temp-1.vercel.app",
-    # ],
+    allow_origins=allow_origins,
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
     allow_credentials=False,

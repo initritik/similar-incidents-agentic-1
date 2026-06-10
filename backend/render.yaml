@@ -1,0 +1,43 @@
+services:
+  - type: web
+    name: incident-resolution-api
+    env: python
+    region: ohio  # Change to your preferred region
+    plan: starter  # Free plan - upgrade as needed
+    
+    buildCommand: pip install -r requirements.txt
+    startCommand: >
+      gunicorn app.main:app 
+        --worker-class uvicorn.workers.UvicornWorker 
+        --workers 4 
+        --worker-connections 1000 
+        --timeout 120
+    
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: LOG_LEVEL
+        value: INFO
+      - key: QDRANT_COLLECTION_NAME
+        value: incident_resolution_collection
+      - key: INGESTION_BATCH_SIZE
+        value: "10"
+      - key: OPENAI_API_KEY
+        sync: false  # Do not sync from repo
+      - key: QDRANT_URL
+        sync: false
+      - key: QDRANT_API_KEY
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+    
+    healthCheckPath: /health
+    
+    # Auto-deploy on git push to main
+    autoDeploy: true
+    
+    # Disk to persist data if needed
+    disk:
+      name: incident-data
+      mountPath: /var/data
+      sizeGB: 1  # Minimal disk - adjust as needed
