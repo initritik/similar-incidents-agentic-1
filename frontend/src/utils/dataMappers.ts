@@ -12,7 +12,18 @@ import type {
   Agent4Response,
   Agent5Response,
   Incident,
+  SimilarIncidentDetail,
 } from "@/types/workflow";
+
+/**
+ * Type guard to filter out null values from SimilarIncidentDetail arrays.
+ * Ensures TypeScript knows that the filtered array contains only non-null values.
+ */
+function isSimilarIncident(
+  inc: SimilarIncidentDetail | null,
+): inc is SimilarIncidentDetail {
+  return inc !== null;
+}
 
 /**
  * Ensure an agent status has all required fields and defaults for missing values.
@@ -65,7 +76,7 @@ export function normalizeAgent2Response(
     similar_incidents: Array.isArray(obj.similar_incidents)
       ? (obj.similar_incidents as unknown[])
           .map((inc) => normalizeSimilarIncident(inc))
-          .filter(Boolean)
+          .filter(isSimilarIncident)
       : [],
   };
 }
@@ -87,7 +98,7 @@ export function normalizeAgent3Response(
     top_matches: Array.isArray(obj.top_matches)
       ? (obj.top_matches as unknown[])
           .map((inc) => normalizeSimilarIncident(inc))
-          .filter(Boolean)
+          .filter(isSimilarIncident)
       : [],
   };
 }
@@ -198,21 +209,11 @@ export function normalizeWorkflow(workflow: WorkflowExecution): WorkflowExecutio
     ...workflow,
     agent_statuses: workflow.agent_statuses.map(normalizeAgentStatus),
     agent_results: {
-      agent_1: workflow.agent_results.agent_1
-        ? normalizeAgent1Response(workflow.agent_results.agent_1)
-        : undefined,
-      agent_2: workflow.agent_results.agent_2
-        ? normalizeAgent2Response(workflow.agent_results.agent_2)
-        : undefined,
-      agent_3: workflow.agent_results.agent_3
-        ? normalizeAgent3Response(workflow.agent_results.agent_3)
-        : undefined,
-      agent_4: workflow.agent_results.agent_4
-        ? normalizeAgent4Response(workflow.agent_results.agent_4)
-        : undefined,
-      agent_5: workflow.agent_results.agent_5
-        ? normalizeAgent5Response(workflow.agent_results.agent_5)
-        : undefined,
+      agent_1: normalizeAgent1Response(workflow.agent_results.agent_1) ?? undefined,
+      agent_2: normalizeAgent2Response(workflow.agent_results.agent_2) ?? undefined,
+      agent_3: normalizeAgent3Response(workflow.agent_results.agent_3) ?? undefined,
+      agent_4: normalizeAgent4Response(workflow.agent_results.agent_4) ?? undefined,
+      agent_5: normalizeAgent5Response(workflow.agent_results.agent_5) ?? undefined,
     },
   };
 }
