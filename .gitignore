@@ -14,9 +14,6 @@ venv/
 env/
 
 # Environment files
-.env
-.env.*
-!.env.example
 
 # Build output
 dist/
