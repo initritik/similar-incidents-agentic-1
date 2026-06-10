@@ -114,14 +114,16 @@ class QdrantService:
             logger.debug(
                 f"Searching similar incidents with threshold {score_threshold}"
             )
-            results = self.client.search(
+            results = self.client.query_points(
                 collection_name=self.collection_name,
-                query_vector=query_embedding,
+                query=query_embedding,
                 limit=limit,
                 score_threshold=score_threshold,
+                with_payload=True,
+                with_vectors=False,
             )
-            logger.info(f"Found {len(results)} similar incidents")
-            return results
+            logger.info(f"Found {len(results.points)} similar incidents")
+            return results.points
         except Exception as e:
             logger.error(f"Failed to search similar incidents: {str(e)}")
             raise

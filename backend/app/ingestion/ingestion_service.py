@@ -1,7 +1,6 @@
 import hashlib
 import logging
 import os
-from datetime import datetime
 
 from qdrant_client.http import models
 
@@ -16,24 +15,24 @@ logger = logging.getLogger(__name__)
 
 
 class IngestionService:
-    """Service for ingesting resolved incidents and datafixes into Qdrant."""
+    """Service for ingesting resolved incidents and datafixes into Qdrant with OpenAI embeddings."""
 
     def __init__(self):
         self.qdrant_service = QdrantService()
         self.embedding_service = EmbeddingService()
         self.batch_size = int(os.getenv("INGESTION_BATCH_SIZE", "10"))
 
-    def ingest_data(self) -> IngestionSummary:
+    def ingest_mock_data(self) -> IngestionSummary:
         """
-        Ingest resolved incidents and datafixes into Qdrant.
+        Main ingestion method: Load resolved incidents, create embeddings, and upsert to Qdrant.
 
         Process:
-        1. Load incidents from mock data
-        2. Filter only RESOLVED incidents
-        3. Match each incident with its datafix
-        4. Generate embeddings
-        5. Upsert in batches
-        6. Return summary
+        1. Load resolved incidents from mock data
+        2. Match each incident with its datafix
+        3. For each record: generate OpenAI embedding from short_description + description
+        4. Create PointStruct with embedding vector and payload (incident + datafix data)
+        5. Upsert batches to Qdrant
+        6. Return summary with statistics
 
         Returns:
             IngestionSummary with ingestion statistics.
@@ -41,13 +40,15 @@ class IngestionService:
         Raises:
             Exception: If ingestion process fails.
         """
-        logger.info("Starting ingestion process")
+        logger.info("=" * 80)
+        logger.info("STARTING MOCK DATA INGESTION")
+        logger.info("=" * 80)
         logger.info(f"Batch size: {self.batch_size}")
 
         try:
             # Collect resolved incidents with their datafixes
             records = self._collect_ingestion_records()
-            logger.info(f"Collected {len(records)} resolved incidents for ingestion")
+            logger.info(f"Collected {len(records)} resolved incidents with datafixes")
 
             # Track statistics
             total_resolved = len(records)
@@ -65,14 +66,21 @@ class IngestionService:
                 try:
                     logger.info(f"Processing batch {batch_num}/{total_batches}")
                     self._process_batch(batch)
-                    logger.info(f"Batch {batch_num}/{total_batches} completed successfully")
+                    logger.info(f"  ✓ Batch {batch_num} completed successfully ({len(batch)} records)")
                 except Exception as e:
-                    logger.error(f"Batch {batch_num} failed: {str(e)}")
+                    logger.error(f"  ✗ Batch {batch_num} failed: {str(e)}")
                     failed_count += 1
 
-            logger.info("Ingestion process completed")
+            logger.info("=" * 80)
+            logger.info("INGESTION COMPLETED")
+            logger.info(f"  Total resolved incidents: {total_resolved}")
+            logger.info(f"  With datafixes: {with_datafix}")
+            logger.info(f"  Without datafixes: {without_datafix}")
+            logger.info(f"  Successfully ingested: {total_resolved - failed_count}")
+            logger.info(f"  Failed: {failed_count}")
+            logger.info("=" * 80)
 
-            summary = IngestionSummary(
+            return IngestionSummary(
                 total_resolved_incidents=total_resolved,
                 incidents_with_datafixes=with_datafix,
                 incidents_without_datafixes=without_datafix,
@@ -82,10 +90,10 @@ class IngestionService:
                 total_batches=total_batches,
             )
 
-            return summary
-
         except Exception as e:
-            logger.error(f"Ingestion process failed: {str(e)}")
+            logger.error("=" * 80)
+            logger.error(f"INGESTION FAILED: {str(e)}")
+            logger.error("=" * 80)
             raise
 
     def ingest_single_resolution(
@@ -102,13 +110,31 @@ class IngestionService:
         datafix_id: str | None = None,
         datafix_description: str | None = None,
         datafix_code: str | None = None,
-    ) -> IncidentIngestionRecord:
+    ) -> None:
         """
-        Ingest one captured resolution as a reusable resolved knowledge record.
+        Ingest a single captured resolution as a reusable knowledge record into Qdrant.
 
-        Uses incident_number as the deterministic point ID, so repeat submissions
-        update the same Qdrant point instead of creating duplicates.
+        Called by Agent4 when capturing user-provided resolutions.
+        Creates embedding and upserts as a new point.
+
+        Args:
+            incident_number: Incident identifier
+            short_description: Brief summary
+            description: Full description
+            resolution_notes: Resolution details
+            assignment_group: Team responsible
+            assigned_to: Assigned person
+            created_date: ISO format date string
+            updated_date: ISO format date string
+            datafix_id: Optional datafix identifier
+            datafix_description: Optional datafix summary
+            datafix_code: Optional datafix code
+
+        Raises:
+            Exception: If ingestion fails
         """
+        logger.info(f"Ingesting single resolution: {incident_number}")
+        
         record = IncidentIngestionRecord(
             incident_number=incident_number,
             short_description=short_description,
@@ -123,19 +149,14 @@ class IngestionService:
             datafix_description=datafix_description,
             datafix_code=datafix_code,
         )
-        self.ingest_single_record(record)
-        return record
-
-    def ingest_single_record(self, record: IncidentIngestionRecord) -> None:
-        """Prepare and upsert one ingestion record into Qdrant."""
-        logger.info("Preparing ingestion payload")
-        point = self._build_point(record)
-        self.upsert_or_update_record(point)
-
-    def upsert_or_update_record(self, point: models.PointStruct) -> None:
-        """Idempotently insert or update one Qdrant record."""
-        logger.info("Upserting record into Qdrant")
-        self.qdrant_service.upsert_batch([point])
+        
+        try:
+            point = self._build_point(record)
+            self.qdrant_service.upsert_batch([point])
+            logger.info(f"Successfully ingested: {incident_number}")
+        except Exception as e:
+            logger.error(f"Failed to ingest {incident_number}: {str(e)}")
+            raise
 
     def _collect_ingestion_records(self) -> list[IncidentIngestionRecord]:
         """
