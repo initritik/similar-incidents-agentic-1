@@ -1,20 +1,12 @@
 import { Clock, Hash, Layers } from "lucide-react";
 import { StatusPill } from "@/components/ui/StatusPill";
+import { formatTime, getDuration, formatDuration } from "@/utils/dateUtils";
 import { cn } from "@/utils/cn";
 import type { WorkflowExecution } from "@/types/workflow";
 
 interface WorkflowSummaryCardProps {
   workflow: WorkflowExecution;
   className?: string;
-}
-
-function fmt(iso: string | null) {
-  if (!iso) return "—";
-  return new Date(iso).toLocaleTimeString(undefined, {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  });
 }
 
 export function WorkflowSummaryCard({
@@ -27,6 +19,14 @@ export function WorkflowSummaryCard({
   const lastCompleted = [...workflow.agent_statuses]
     .reverse()
     .find((a) => a.completed_at);
+
+  // Calculate total workflow duration if workflow is complete
+  const firstStarted = workflow.agent_statuses.find((a) => a.started_at);
+  const workflowDuration =
+    workflow.overall_status === "COMPLETED" ||
+    workflow.overall_status === "FAILED"
+      ? getDuration(firstStarted?.started_at, lastCompleted?.completed_at)
+      : null;
 
   return (
     <div
@@ -56,10 +56,16 @@ export function WorkflowSummaryCard({
       )}
 
       {lastCompleted?.completed_at && (
-        <div className="ml-auto flex items-center gap-1.5 text-xs text-muted-foreground">
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
           <Clock className="size-3.5" aria-hidden />
-          <span>Updated {fmt(lastCompleted.completed_at)}</span>
+          <span>Updated {formatTime(lastCompleted.completed_at)}</span>
         </div>
+      )}
+
+      {workflowDuration !== null && (
+        <span className="text-xs text-muted-foreground">
+          Duration: {formatDuration(workflowDuration)}
+        </span>
       )}
     </div>
   );

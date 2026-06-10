@@ -11,7 +11,7 @@ interface IncidentSearchFormProps {
   hasResult: boolean;
 }
 
-const INCIDENT_ID_LENGTH = 10;
+const INCIDENT_ID_LENGTH = 9;
 
 export function IncidentSearchForm({
   onSubmit,
@@ -24,7 +24,7 @@ export function IncidentSearchForm({
 
   const validationError =
     touched && value.length !== INCIDENT_ID_LENGTH
-      ? "Please enter a 10-character incident identifier."
+      ? "Please enter a 9-character incident identifier (INC followed by 6 digits)."
       : null;
 
   const isValid = value.length === INCIDENT_ID_LENGTH;

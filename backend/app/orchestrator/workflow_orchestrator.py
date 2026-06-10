@@ -33,8 +33,9 @@ class WorkflowOrchestrator:
         datafix_description: str | None = None,
         datafix_code: str | None = None,
     ) -> WorkflowExecution:
+        logger.info(f"Starting workflow for incident: {incident_number}")
         workflow = self.status_store.create_workflow(incident_number)
-        logger.info("Workflow created")
+        logger.info(f"Workflow created with ID: {workflow.workflow_id}")
 
         # ── Agent 1 ──────────────────────────────────────────────────────────
         workflow = self.execute_agent1(workflow.workflow_id, incident_number)
@@ -130,7 +131,7 @@ class WorkflowOrchestrator:
         self.status_store.store_agent_result(
             workflow_id=workflow_id,
             agent_name="Agent 1",
-            result=result.model_dump(),
+            result=result.model_dump(mode="json"),
         )
 
         if result.success:
@@ -181,7 +182,7 @@ class WorkflowOrchestrator:
             self.status_store.store_agent_result(
                 workflow_id=workflow_id,
                 agent_name="Agent 2",
-                result=result.model_dump(),
+                result=result.model_dump(mode="json"),
             )
 
             if result.success:
@@ -241,7 +242,7 @@ class WorkflowOrchestrator:
             self.status_store.store_agent_result(
                 workflow_id=workflow_id,
                 agent_name="Agent 3",
-                result=result.model_dump(),
+                result=result.model_dump(mode="json"),
             )
 
             if result.success:
@@ -326,7 +327,7 @@ class WorkflowOrchestrator:
             self.status_store.store_agent_result(
                 workflow_id=workflow_id,
                 agent_name="Agent 4",
-                result=result.model_dump(),
+                result=result.model_dump(mode="json"),
             )
 
             if result.success:
@@ -397,7 +398,7 @@ class WorkflowOrchestrator:
             self.status_store.store_agent_result(
                 workflow_id=workflow_id,
                 agent_name="Agent 5",
-                result=result.model_dump(),
+                result=result.model_dump(mode="json"),
             )
 
             if result.success:
