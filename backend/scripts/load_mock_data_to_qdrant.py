@@ -76,6 +76,7 @@ def main():
         logger.error("  - QDRANT_API_KEY")
         sys.exit(1)
 
+#just for committing
 
 if __name__ == "__main__":
     main()
