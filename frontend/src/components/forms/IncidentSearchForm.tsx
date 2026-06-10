@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { PlayCircle, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ErrorState } from "@/components/ui/States";
 import type { StartWorkflowRequest } from "@/types/workflow";
 
 interface IncidentSearchFormProps {
@@ -11,7 +10,7 @@ interface IncidentSearchFormProps {
   hasResult: boolean;
 }
 
-const INCIDENT_ID_LENGTH = 10;
+const INCIDENT_ID_LENGTH = 9;
 
 export function IncidentSearchForm({
   onSubmit,
@@ -24,7 +23,7 @@ export function IncidentSearchForm({
 
   const validationError =
     touched && value.length !== INCIDENT_ID_LENGTH
-      ? "Please enter a 10-character incident identifier."
+      ? `Please enter a ${INCIDENT_ID_LENGTH}-character incident identifier.`
       : null;
 
   const isValid = value.length === INCIDENT_ID_LENGTH;
@@ -66,7 +65,7 @@ export function IncidentSearchForm({
             value={value}
             onChange={(e) => setValue(e.target.value.toUpperCase())}
             onBlur={() => setTouched(true)}
-            placeholder="INC0000010"
+            placeholder="INC000005"
             aria-describedby={validationError ? "incident-id-error" : undefined}
             aria-invalid={!!validationError}
             disabled={isLoading}

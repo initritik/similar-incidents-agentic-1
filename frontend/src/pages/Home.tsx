@@ -72,7 +72,7 @@ export function Home() {
       {!workflow && !error && !isLoading && (
         <EmptyState
           title="No workflow running"
-          description="Enter a 10-character incident identifier above and press Start workflow."
+          description="Enter a 9-character incident identifier above and press Start workflow."
         />
       )}
 
