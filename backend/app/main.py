@@ -29,17 +29,17 @@ app = FastAPI(title="Incident Resolution Assistant API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://localhost:8000",
-        "https://similar-incidents-agentic.vercel.app",
-    ],
     # allow_origins=[
+    #     "http://localhost:5173",
+    #     "http://localhost:8000",
     #     "https://similar-incidents-agentic.vercel.app",
     # ],
+    allow_origins=[
+        "https://similar-incidents-agentic.vercel.app",
+    ],
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
-    allow_credentials=False,s
+    allow_credentials=False
 )
 
 app.include_router(incident_router)
