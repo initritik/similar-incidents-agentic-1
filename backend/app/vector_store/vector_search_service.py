@@ -93,6 +93,14 @@ class VectorSearchService:
         """
         Build a result dict from a scored point.
 
+        Datafix resolution strategy (in priority order):
+        1. Payload already contains datafix_description / datafix_code directly
+           — this is the case for records ingested by Agent 4 (user-captured resolutions).
+           These records store the datafix inline in the Qdrant payload because the
+           datafix_id (e.g. "DFX-INC000031") does not exist in MOCK_DATAFIXES.
+        2. Fall back to DatafixService lookup by datafix_id for historical mock-data
+           records whose datafix data lives in the in-memory MOCK_DATAFIXES list.
+
         Args:
             scored_point: A ScoredPoint from Qdrant.
 
@@ -115,19 +123,45 @@ class VectorSearchService:
             "updated_date": payload.get("updated_date"),
         }
 
-        # Get associated datafix
-        datafix = None
         datafix_id = payload.get("datafix_id")
-        if datafix_id:
-            datafix = DatafixService.get_datafix_by_id(datafix_id)
 
-        datafix_data = None
-        if datafix:
+        # --- Strategy 1: datafix data already present inline in payload ---
+        # Agent 4 stores datafix_description and datafix_code directly in the
+        # Qdrant payload when ingesting user-captured resolutions.
+        payload_datafix_description = payload.get("datafix_description")
+        payload_datafix_code = payload.get("datafix_code")
+
+        if datafix_id and (payload_datafix_description or payload_datafix_code):
             datafix_data = {
-                "datafix_id": datafix.datafix_id,
-                "description": datafix.description,
-                "datafix_code": datafix.datafix_code,
+                "datafix_id": datafix_id,
+                "description": payload_datafix_description,
+                "datafix_code": payload_datafix_code,
             }
+            logger.debug(
+                f"Datafix for {incident_data['incident_number']} resolved from payload inline data"
+            )
+        # --- Strategy 2: look up by ID in MOCK_DATAFIXES (historical records) ---
+        elif datafix_id:
+            datafix = DatafixService.get_datafix_by_id(datafix_id)
+            if datafix:
+                datafix_data = {
+                    "datafix_id": datafix.datafix_id,
+                    "description": datafix.description,
+                    "datafix_code": datafix.datafix_code,
+                }
+                logger.debug(
+                    f"Datafix for {incident_data['incident_number']} resolved via DatafixService lookup"
+                )
+            else:
+                # datafix_id present but not found in mock data and no inline payload data
+                # This shouldn't happen for well-formed records, but handle gracefully.
+                logger.warning(
+                    f"datafix_id={datafix_id} not found in DatafixService and no inline payload data "
+                    f"for incident {incident_data['incident_number']}"
+                )
+                datafix_data = None
+        else:
+            datafix_data = None
 
         return {
             "incident_number": incident_data["incident_number"],

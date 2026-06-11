@@ -527,5 +527,20 @@ MOCK_INCIDENTS: list[Incident] = [
     assignment_group="Logistics Operations Support",
     assigned_to="Anjali Menon",
     ),
+    Incident(
+    incident_number="INC000033",
+    short_description="Shipment scheduling queue delayed for distribution center",
+    description=(
+    ),
+    state=IncidentState.OPEN,
+    resolution_notes=(
+        "Initial assessment underway. Messaging service health and queue "
+        "consumer performance metrics are being reviewed."
+    ),
+    created_date=datetime(2026, 6, 9, 10, 15),
+    updated_date=datetime(2026, 6, 9, 11, 50),
+    assignment_group="Logistics Operations Support",
+    assigned_to="Saira Reddy",
+    ),
 ]
 
