@@ -149,7 +149,7 @@ export function IncidentSearchForm({
         </form>
 
         {/* Pipeline info */}
-        <div className="mt-5 space-y-1.5 rounded-lg bg-rl-ivory-dark/50 px-4 py-3.5 dark:bg-muted/20">
+        {/* <div className="mt-5 space-y-1.5 rounded-lg bg-rl-ivory-dark/50 px-4 py-3.5 dark:bg-muted/20">
           <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
             5-Agent Pipeline
           </p>
@@ -167,7 +167,7 @@ export function IncidentSearchForm({
               <span className="text-[11px] text-muted-foreground">{label}</span>
             </div>
           ))}
-        </div>
+        </div> */}
       </div>
     </aside>
   );
