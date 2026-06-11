@@ -35,10 +35,11 @@
   --color-rl-gold-light:  var(--rl-gold-light);
   --color-rl-ivory:       var(--rl-ivory);
   --color-rl-ivory-dark:  var(--rl-ivory-dark);
+  --color-rl-deep:        var(--rl-deep);
 }
 
 :root {
-  --radius: 0.5rem;
+  --radius: 0.625rem;
 
   /* Royal London brand colours */
   --rl-navy:        #0C1F3F;
@@ -48,46 +49,29 @@
   --rl-gold-light:  #E5C97B;
   --rl-ivory:       #F8F6F1;
   --rl-ivory-dark:  #EDE9DF;
-
-  /* shadcn / Tailwind semantic tokens mapped to RL palette */
-  --background:            #F8F6F1;
-  --foreground:            #0C1F3F;
-  --card:                  #FFFFFF;
-  --card-foreground:       #0C1F3F;
-  --popover:               #FFFFFF;
-  --popover-foreground:    #0C1F3F;
-  --primary:               #0C1F3F;
-  --primary-foreground:    #F8F6F1;
-  --secondary:             #EDE9DF;
-  --secondary-foreground:  #0C1F3F;
-  --muted:                 #EDE9DF;
-  --muted-foreground:      #5A6A82;
-  --accent:                #C9A84C;
-  --accent-foreground:     #0C1F3F;
-  --destructive:           oklch(0.577 0.245 27.325);
-  --border:                #D8D2C4;
-  --input:                 #D8D2C4;
-  --ring:                  #C9A84C;
+  --rl-deep:        #070F1E;
 }
 
+/* ── Always dark ─────────────────────────────────────────────── */
+:root,
 .dark {
-  --background:            #0C1F3F;
-  --foreground:            #F8F6F1;
-  --card:                  #1A3461;
-  --card-foreground:       #F8F6F1;
-  --popover:               #1A3461;
-  --popover-foreground:    #F8F6F1;
+  --background:            #070F1E;
+  --foreground:            #EEE8D8;
+  --card:                  #0E1E3A;
+  --card-foreground:       #EEE8D8;
+  --popover:               #0E1E3A;
+  --popover-foreground:    #EEE8D8;
   --primary:               #C9A84C;
-  --primary-foreground:    #0C1F3F;
-  --secondary:             #243F72;
-  --secondary-foreground:  #F8F6F1;
-  --muted:                 #243F72;
-  --muted-foreground:      #9AAEC4;
+  --primary-foreground:    #070F1E;
+  --secondary:             #1A3461;
+  --secondary-foreground:  #EEE8D8;
+  --muted:                 #132040;
+  --muted-foreground:      #7A9ABF;
   --accent:                #C9A84C;
-  --accent-foreground:     #0C1F3F;
-  --destructive:           oklch(0.704 0.191 22.216);
-  --border:                rgba(255,255,255,0.12);
-  --input:                 rgba(255,255,255,0.15);
+  --accent-foreground:     #070F1E;
+  --destructive:           #E05252;
+  --border:                rgba(201,168,76,0.12);
+  --input:                 rgba(255,255,255,0.08);
   --ring:                  #C9A84C;
 }
 
@@ -96,25 +80,138 @@
     @apply border-border outline-ring/50;
   }
 
-  body {
-    @apply bg-background text-foreground;
-    font-family:
-      "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-      "Segoe UI", sans-serif;
+  html {
+    color-scheme: dark;
   }
 
-  /* Smooth scrollbar for the app */
-  ::-webkit-scrollbar        { width: 6px; height: 6px; }
+  body {
+    @apply bg-background text-foreground;
+    font-family: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(201,168,76,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 100%, rgba(26,52,97,0.4) 0%, transparent 60%);
+    background-attachment: fixed;
+  }
+
+  h1, h2, h3 {
+    font-family: "Playfair Display", Georgia, serif;
+    letter-spacing: -0.01em;
+  }
+
+  code, .mono {
+    font-family: "JetBrains Mono", "Fira Code", monospace;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar        { width: 4px; height: 4px; }
   ::-webkit-scrollbar-track  { background: transparent; }
-  ::-webkit-scrollbar-thumb  { background: var(--rl-navy-light); border-radius: 99px; }
+  ::-webkit-scrollbar-thumb  { background: rgba(201,168,76,0.3); border-radius: 99px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(201,168,76,0.6); }
 }
 
-/* ── Gold shimmer for running state ─────────────────────────── */
+/* ── Gold pulse ring (running state) ───────────────────────── */
 @keyframes gold-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(201,168,76,0.35); }
-  50%       { box-shadow: 0 0 0 6px rgba(201,168,76,0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(201,168,76,0.5), 0 0 20px rgba(201,168,76,0.1); }
+  50%       { box-shadow: 0 0 0 8px rgba(201,168,76,0), 0 0 30px rgba(201,168,76,0.2); }
 }
 
 .rl-running-ring {
-  animation: gold-pulse 1.8s ease-in-out infinite;
+  animation: gold-pulse 2s ease-in-out infinite;
+}
+
+/* ── Connector flow animation ───────────────────────────────── */
+@keyframes flow-yellow {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+.connector-running {
+  background: linear-gradient(90deg,
+    rgba(201,168,76,0.2) 0%,
+    rgba(201,168,76,1) 40%,
+    rgba(229,201,123,1) 50%,
+    rgba(201,168,76,1) 60%,
+    rgba(201,168,76,0.2) 100%
+  );
+  background-size: 200% 100%;
+  animation: flow-yellow 1.4s linear infinite;
+}
+
+.connector-completed {
+  background: #3B82F6;
+  box-shadow: 0 0 6px rgba(59,130,246,0.5);
+}
+
+.connector-pending {
+  background: rgba(201,168,76,0.12);
+}
+
+.connector-failed {
+  background: #E05252;
+}
+
+/* ── Agent node glow ────────────────────────────────────────── */
+@keyframes agent-glow {
+  0%, 100% { box-shadow: 0 0 12px rgba(201,168,76,0.3), 0 4px 24px rgba(0,0,0,0.4); }
+  50%       { box-shadow: 0 0 24px rgba(201,168,76,0.6), 0 4px 32px rgba(0,0,0,0.5); }
+}
+
+.agent-running-glow {
+  animation: agent-glow 2s ease-in-out infinite;
+}
+
+/* ── Shimmer for card backgrounds ───────────────────────────── */
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.shimmer-bar {
+  position: relative;
+  overflow: hidden;
+}
+.shimmer-bar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
+  animation: shimmer 2.5s ease-in-out infinite;
+}
+
+/* ── Particle/dot float for agent icons ─────────────────────── */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-4px); }
+}
+
+.agent-icon-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* ── Premium card border gradient ───────────────────────────── */
+.gold-border-card {
+  position: relative;
+  background: #0E1E3A;
+  border: 1px solid rgba(201,168,76,0.18);
+}
+
+.gold-border-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(201,168,76,0.4), rgba(201,168,76,0.05), rgba(201,168,76,0.15));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ── Navbar glass effect ────────────────────────────────────── */
+.nav-glass {
+  background: rgba(7, 15, 30, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(201,168,76,0.15);
 }

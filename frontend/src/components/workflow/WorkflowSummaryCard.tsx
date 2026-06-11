@@ -27,39 +27,57 @@ export function WorkflowSummaryCard({
       ? getDuration(firstStarted?.started_at, lastCompleted?.completed_at)
       : null;
 
+  const completedCount = workflow.agent_statuses.filter(
+    (a) => a.status === "COMPLETED",
+  ).length;
+
   return (
     <div
       className={cn(
         "flex flex-wrap items-center gap-x-5 gap-y-2",
-        "rounded-lg border border-border bg-card px-4 py-3 shadow-sm",
-        "text-sm",
+        "rounded-xl border border-rl-gold/12 bg-rl-navy/50 px-5 py-3.5",
+        "shadow-lg shadow-black/30",
         className,
       )}
     >
       {/* Workflow ID */}
-      <div className="flex items-center gap-1.5 text-muted-foreground">
-        <Hash className="size-3 text-rl-gold/70" aria-hidden />
-        <span className="font-mono text-[11px]">
+      <div className="flex items-center gap-1.5 text-white/40">
+        <Hash className="size-3 text-rl-gold/50" aria-hidden />
+        <span className="font-mono text-[11px] tracking-wider">
           {workflow.workflow_id.slice(0, 8)}&hellip;
         </span>
       </div>
 
+      {/* Divider */}
+      <div className="h-3 w-px bg-rl-gold/15" aria-hidden />
+
       {/* Incident number */}
       <div className="flex items-center gap-1.5">
-        <Layers className="size-3 text-rl-gold/70" aria-hidden />
-        <span className="font-mono text-[11px] font-semibold text-foreground">
+        <Layers className="size-3 text-rl-gold/50" aria-hidden />
+        <span className="font-mono text-[11px] font-bold text-rl-gold-light tracking-widest">
           {workflow.incident_number}
         </span>
       </div>
 
+      {/* Divider */}
+      <div className="h-3 w-px bg-rl-gold/15" aria-hidden />
+
       {/* Status pill */}
       <StatusPill status={workflow.overall_status} />
 
+      {/* Progress */}
+      <div className="flex items-center gap-1.5">
+        <span className="text-[10px] text-white/40">Progress</span>
+        <span className="font-mono text-[11px] font-bold text-white/70">
+          {completedCount}/5
+        </span>
+      </div>
+
       {/* Active agent */}
       {activeAgent && (
-        <span className="text-[11px] text-muted-foreground">
+        <span className="text-[11px] text-white/40">
           Active:{" "}
-          <strong className="font-semibold text-foreground">
+          <strong className="font-semibold text-rl-gold-light">
             {activeAgent.agent_name}
           </strong>
         </span>
@@ -67,7 +85,7 @@ export function WorkflowSummaryCard({
 
       {/* Last updated */}
       {lastCompleted?.completed_at && (
-        <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+        <div className="flex items-center gap-1.5 text-[11px] text-white/35">
           <Clock className="size-3" aria-hidden />
           <span>Updated {formatTime(lastCompleted.completed_at)}</span>
         </div>
@@ -75,8 +93,11 @@ export function WorkflowSummaryCard({
 
       {/* Duration */}
       {workflowDuration !== null && (
-        <span className="text-[11px] text-muted-foreground">
-          Duration: {formatDuration(workflowDuration)}
+        <span className="text-[11px] text-white/35">
+          Duration:{" "}
+          <span className="text-white/55 font-medium">
+            {formatDuration(workflowDuration)}
+          </span>
         </span>
       )}
     </div>
