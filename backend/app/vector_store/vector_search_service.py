@@ -21,7 +21,7 @@ class VectorSearchService:
         self,
         incident: Incident,
         limit: int = 5,
-        score_threshold: float = 0.3,
+        score_threshold: float = 0.5,
     ) -> list[dict]:
         """
         Search for incidents similar to the provided incident.

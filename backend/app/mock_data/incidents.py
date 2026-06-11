@@ -493,5 +493,20 @@ MOCK_INCIDENTS: list[Incident] = [
         assignment_group="Customer Account Support",
         assigned_to="Leena George",
     ),
+    Incident(
+    incident_number="INC000031",
+    short_description="Order processing queue stuck for regional warehouse",
+    description=(
+        "Multiple customer orders are not progressing beyond the validation "
+        "stage. Queue ID ORD_QUEUE_12 shows pending transactions for the last "
+        "three hours, causing delays in shipment processing."
+    ),
+    state=IncidentState.OPEN,
+    resolution_notes="Investigation initiated. Queue service logs are being analyzed for bottlenecks.",
+    created_date=datetime(2026, 6, 8, 14, 20),
+    updated_date=datetime(2026, 6, 8, 16, 45),
+    assignment_group="Order Fulfillment Support",
+    assigned_to="Rahul Nair",
+    ),
 ]
 
