@@ -79,8 +79,16 @@ function initialPendingWorkflow(incidentNumber: string): WorkflowExecution {
 /**
  * Determine whether a completed workflow needs the user to provide a resolution.
  *
- * Condition: Agent 3 completed with similar_incidents_found = false
- * AND Agent 4 ran but did NOT save (no resolution was provided).
+ * Condition:
+ *   - Agent 3 completed with similar_incidents_found = false  (no match ≥ 50%)
+ *   - Agent 4 has NOT yet saved a resolution
+ *   - Agent 4 is either PENDING or was SKIPPED with an "awaiting user input" message
+ *     (the orchestrator skips Agent 4 on the first run when no resolution data is
+ *      provided, then waits for the frontend to re-submit with resolution notes)
+ *
+ * NOTE: When Agent 4 is SKIPPED because *similar incidents were found* (and Agent 5
+ * handles the recommendation), its skip message says "similar incident(s) found" —
+ * that case must NOT trigger the capture form, so we check the message text.
  */
 function detectNeedsCapture(workflow: WorkflowExecution | null): boolean {
   if (!workflow) return false;
@@ -105,15 +113,19 @@ function detectNeedsCapture(workflow: WorkflowExecution | null): boolean {
   if (!noSimilarIncidents) return false;
 
   // Agent 4 must NOT have successfully saved a resolution yet
-  // (either it wasn't run, or it ran but saved=false)
-  const agent4NotSaved =
-    !agent4Result ||
-    agent4Result.saved === false;
+  const agent4NotSaved = !agent4Result || agent4Result.saved === false;
 
-  // Agent 4 must not have been skipped
-  const agent4NotSkipped = agent4Status?.status !== "SKIPPED";
+  // Agent 4 is "awaiting input" when:
+  //   a) It was SKIPPED by the orchestrator with the sentinel "awaiting user input" message
+  //   b) It is still PENDING (shouldn't normally happen at terminal state, but guard it)
+  const agent4AwaitingInput =
+    agent4Status?.status === "SKIPPED" &&
+    (agent4Status.message?.toLowerCase().includes("awaiting user input") ??
+      false);
 
-  return agent4NotSaved && agent4NotSkipped;
+  const agent4Pending = agent4Status?.status === "PENDING";
+
+  return agent4NotSaved && (agent4AwaitingInput || agent4Pending);
 }
 
 // ── Hook ──────────────────────────────────────────────────────────────────────

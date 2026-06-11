@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/utils/cn";
 import { StatusPill } from "@/components/ui/StatusPill";
 import { Agent1Panel } from "@/components/agents/Agent1Panel";
@@ -44,12 +44,18 @@ export function AgentTabs({
   onCaptureSubmit,
 }: AgentTabsProps) {
   const [active, setActive] = useState<TabKey>(
-    // Auto-navigate to Agent 4 when it needs resolution input
+    // Auto-navigate to Agent 4 on initial render if capture is needed
     needsResolutionCapture ? "Agent 4" : "Agent 1",
   );
 
-  // If needsResolutionCapture just became true and we're not already on Agent 4, switch
-  // (Handled via the default above; for re-renders use effect if needed — see note.)
+  // When needsResolutionCapture becomes true after the initial render
+  // (e.g. the workflow_done SSE arrives and flips the flag), auto-switch
+  // to Agent 4 so the user sees the form without having to click manually.
+  useEffect(() => {
+    if (needsResolutionCapture) {
+      setActive("Agent 4");
+    }
+  }, [needsResolutionCapture]);
 
   const statusMap = Object.fromEntries(
     workflow.agent_statuses.map((a) => [a.agent_name, a]),

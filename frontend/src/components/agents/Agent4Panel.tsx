@@ -48,20 +48,10 @@ export function Agent4Panel({
   onCaptureSubmit,
   isCaptureLoading,
 }: Agent4PanelProps) {
-  // ── Skipped: similar incidents found, Agent 5 handles it ─────────────────
-  if (agentStatus.status === "SKIPPED") {
-    return (
-      <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed bg-muted/30 px-6 py-12 text-center">
-        <SkipForward className="size-8 text-muted-foreground" aria-hidden />
-        <p className="text-sm font-medium text-foreground">Agent 4 skipped</p>
-        <p className="max-w-xs text-sm text-muted-foreground">
-          Similar incident(s) found — Agent 5 will generate the recommended resolution.
-        </p>
-      </div>
-    );
-  }
-
   // ── Waiting for user to provide resolution (new incident path) ────────────
+  // Check this BEFORE the SKIPPED guard — when Agent 4 is SKIPPED with an
+  // "awaiting user input" message, needsResolutionCapture will be true and we
+  // must show the form instead of the generic "skipped" UI.
   if (needsResolutionCapture && incidentNumber && onCaptureSubmit) {
     return (
       <ResolutionCaptureForm
@@ -69,6 +59,28 @@ export function Agent4Panel({
         onSubmit={onCaptureSubmit}
         isLoading={isCaptureLoading ?? false}
       />
+    );
+  }
+
+  // ── Skipped: similar incidents found → Agent 5 handles recommendation ────
+  if (agentStatus.status === "SKIPPED") {
+    // Distinguish between the two skip reasons:
+    //   1. Similar incidents found → Agent 5 generates recommendation
+    //   2. Resolution was already captured → no further action needed
+    const wasResolutionCaptured =
+      result?.saved === true ||
+      agentStatus.message?.toLowerCase().includes("resolution captured");
+
+    return (
+      <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed bg-muted/30 px-6 py-12 text-center">
+        <SkipForward className="size-8 text-muted-foreground" aria-hidden />
+        <p className="text-sm font-medium text-foreground">Agent 4 skipped</p>
+        <p className="max-w-xs text-sm text-muted-foreground">
+          {wasResolutionCaptured
+            ? "Resolution was already captured. No further action needed."
+            : "Similar incident(s) found — Agent 5 will generate the recommended resolution."}
+        </p>
+      </div>
     );
   }
 

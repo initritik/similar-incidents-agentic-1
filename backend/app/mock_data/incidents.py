@@ -508,5 +508,24 @@ MOCK_INCIDENTS: list[Incident] = [
     assignment_group="Order Fulfillment Support",
     assigned_to="Rahul Nair",
     ),
+    Incident(
+    incident_number="INC000032",
+    short_description="Shipment scheduling queue delayed for distribution center",
+    description=(
+        "Outbound shipment requests are accumulating in the scheduling "
+        "pipeline and are not advancing to the dispatch stage. Queue ID "
+        "SHIP_QUEUE_08 has reported a growing backlog of pending records "
+        "over the past two hours, resulting in delayed warehouse operations."
+    ),
+    state=IncidentState.OPEN,
+    resolution_notes=(
+        "Initial assessment underway. Messaging service health and queue "
+        "consumer performance metrics are being reviewed."
+    ),
+    created_date=datetime(2026, 6, 9, 10, 15),
+    updated_date=datetime(2026, 6, 9, 11, 50),
+    assignment_group="Logistics Operations Support",
+    assigned_to="Anjali Menon",
+    ),
 ]
 
