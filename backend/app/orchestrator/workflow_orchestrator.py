@@ -84,31 +84,57 @@ class WorkflowOrchestrator:
         )
 
         if similar_incidents_found:
-            # ── Agent 5 (similar incidents path) ─────────────────────────────
+            # ── Agent 5 path: similar incidents found ─────────────────────────
+            # Skip Agent 4 — similar incidents found, Agent 5 handles recommendation
             workflow = self._skip_agents(
                 workflow.workflow_id,
                 ("Agent 4",),
-                "Skipped because similar incidents were found – Agent 5 will handle recommendation.",
+                "Skipped — similar incident(s) found. Agent 5 will generate the recommended resolution.",
             )
             workflow = self.execute_agent5(
                 workflow_id=workflow.workflow_id,
                 incident_number=incident_number,
             )
         else:
-            # ── Agent 4 (no similar incidents path) ──────────────────────────
-            workflow = self.execute_agent4(
-                workflow_id=workflow.workflow_id,
-                incident_number=incident_number,
-                provide_resolution=provide_resolution,
-                resolution_notes=resolution_notes,
-                datafix_description=datafix_description,
-                datafix_code=datafix_code,
-            )
-            workflow = self._skip_agents(
-                workflow.workflow_id,
-                ("Agent 5",),
-                "Skipped because no similar incidents were found.",
-            )
+            # ── Agent 4 path: no similar incidents (new incident) ────────────
+            #
+            # Two sub-cases:
+            #   A) resolution_notes provided  → Agent 4 ingests it; skip Agent 5
+            #   B) resolution_notes NOT provided → Skip Agent 4 with "awaiting input"
+            #      message so the frontend knows it must prompt the user.
+            #      Agent 5 is also skipped (no similar incidents to recommend from).
+
+            has_resolution = bool(resolution_notes and resolution_notes.strip())
+
+            if has_resolution:
+                # Sub-case A: resolution data available — run Agent 4
+                workflow = self.execute_agent4(
+                    workflow_id=workflow.workflow_id,
+                    incident_number=incident_number,
+                    provide_resolution=provide_resolution,
+                    resolution_notes=resolution_notes,
+                    datafix_description=datafix_description,
+                    datafix_code=datafix_code,
+                )
+                workflow = self._skip_agents(
+                    workflow.workflow_id,
+                    ("Agent 5",),
+                    "Skipped — no similar incidents found. Resolution captured via Agent 4.",
+                )
+            else:
+                # Sub-case B: no resolution data — skip both Agent 4 and Agent 5.
+                # The frontend will detect agent_3.similar_incidents_found=False and
+                # agent_4.saved=False / status=SKIPPED to show the capture form.
+                workflow = self._skip_agents(
+                    workflow.workflow_id,
+                    ("Agent 4",),
+                    "Awaiting user input — no similar incidents found. Please provide resolution notes.",
+                )
+                workflow = self._skip_agents(
+                    workflow.workflow_id,
+                    ("Agent 5",),
+                    "Skipped — no similar incidents found to generate a recommendation from.",
+                )
 
         logger.info("Workflow completed")
         stored_workflow = self.status_store.get_workflow(workflow.workflow_id)

@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { IncidentSearchForm } from "@/components/forms/IncidentSearchForm";
 import { WorkflowDiagram } from "@/components/workflow/WorkflowDiagram";
 import { WorkflowSummaryCard } from "@/components/workflow/WorkflowSummaryCard";
@@ -15,10 +16,27 @@ const EMPTY_AGENT_STATUSES = ["Agent 1","Agent 2","Agent 3","Agent 4","Agent 5"]
 }));
 
 export function Home() {
-  const { workflow, isLoading, isStreaming, error, agentLogs, run, reset } = useWorkflowRunner();
+  const {
+    workflow,
+    isLoading,
+    isStreaming,
+    error,
+    agentLogs,
+    needsResolutionCapture,
+    isCaptureLoading,
+    run,
+    submitResolutionCapture,
+    reset,
+  } = useWorkflowRunner();
+
   const diagramStatuses = workflow?.agent_statuses ?? EMPTY_AGENT_STATUSES;
-  const isBusy = isLoading || isStreaming;
-  const workflowDone = workflow?.overall_status === "COMPLETED" || workflow?.overall_status === "FAILED";
+  const isBusy = isLoading || isStreaming || isCaptureLoading;
+  const workflowDone =
+    workflow?.overall_status === "COMPLETED" ||
+    workflow?.overall_status === "FAILED";
+
+  // When resolution capture is needed, the AgentTabs auto-switches to Agent 4.
+  // We don't need to do anything extra here — AgentTabs handles the tab switch.
 
   return (
     <div className="flex min-h-[calc(100vh-3.5rem)] flex-col gap-5 lg:flex-row lg:items-start">
@@ -37,6 +55,23 @@ export function Home() {
         {error && (
           <div>
             <ErrorState title="Workflow Error" message={error || "An unexpected error occurred"} />
+          </div>
+        )}
+
+        {/* Resolution capture notice in sidebar */}
+        {needsResolutionCapture && workflow && (
+          <div className="rounded-xl border border-amber-500/30 bg-amber-500/8 px-4 py-3.5">
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber-400/80 mb-1">
+              Action Required
+            </p>
+            <p className="text-xs leading-relaxed text-amber-300/70">
+              No similar incidents found for{" "}
+              <span className="font-mono font-bold text-amber-300">
+                {workflow.incident_number}
+              </span>
+              . Please provide a resolution in the{" "}
+              <strong className="text-amber-300">Agent 4</strong> tab.
+            </p>
           </div>
         )}
 
@@ -81,15 +116,16 @@ export function Home() {
               Live
             </span>
           )}
+          {isCaptureLoading && (
+            <span className="ml-auto flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-amber-400" role="status" aria-live="polite">
+              <span className="size-1.5 animate-pulse rounded-full bg-amber-400" aria-hidden />
+              Saving Resolution…
+            </span>
+          )}
         </div>
 
         {/* Workflow Diagram — always shown */}
         <WorkflowDiagram agentStatuses={diagramStatuses} />
-
-        {/*
-          The block below is reserved and stable in height until workflow completes.
-          Empty/loading states sit here. Agent results only appear after all agents finish.
-        */}
 
         {/* Loading skeleton */}
         {isLoading && !workflow && (
@@ -107,8 +143,13 @@ export function Home() {
           />
         )}
 
-        {/* Summary strip + Agent Tabs — only after workflow is fully complete */}
-        {workflow && workflowDone && (
+        {/*
+          Show summary + agent tabs when:
+          1. Workflow is fully done (COMPLETED / FAILED), OR
+          2. needsResolutionCapture is true (Agent 4 awaiting input — workflow is technically
+             done from backend's perspective but needs user action)
+        */}
+        {workflow && (workflowDone || needsResolutionCapture) && (
           <div className="space-y-4">
             <WorkflowSummaryCard workflow={workflow} />
             <div className="flex items-center gap-2 px-1 pt-1">
@@ -116,8 +157,20 @@ export function Home() {
               <span className="text-[11px] font-semibold uppercase tracking-[0.15em] text-rl-gold/70">
                 Agent Results
               </span>
+              {needsResolutionCapture && (
+                <span className="ml-2 flex items-center gap-1 rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-semibold text-amber-400">
+                  <span className="size-1.5 rounded-full bg-amber-400 animate-pulse" aria-hidden />
+                  Agent 4 awaiting input
+                </span>
+              )}
             </div>
-            <AgentTabs workflow={workflow} agentLogs={agentLogs} />
+            <AgentTabs
+              workflow={workflow}
+              agentLogs={agentLogs}
+              needsResolutionCapture={needsResolutionCapture}
+              isCaptureLoading={isCaptureLoading}
+              onCaptureSubmit={submitResolutionCapture}
+            />
           </div>
         )}
       </div>

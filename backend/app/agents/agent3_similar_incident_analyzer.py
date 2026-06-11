@@ -6,9 +6,15 @@ logger = logging.getLogger(__name__)
 
 
 class Agent3SimilarIncidentAnalyzer:
-    """Agent 3: analyzes Agent 2 results and selects UI-ready top matches."""
+    """Agent 3: analyzes Agent 2 results and selects UI-ready top matches.
 
-    SIMILARITY_THRESHOLD = 0.3
+    Only incidents with a similarity score >= SIMILARITY_THRESHOLD are
+    considered "similar". If all retrieved incidents fall below this threshold
+    the incident is treated as completely new and Agent 4 will be invoked to
+    capture a resolution from the user.
+    """
+
+    SIMILARITY_THRESHOLD = 0.5  # 50 % — incidents below this are "not similar"
     MAX_TOP_MATCHES = 5
 
     def analyze(self, agent2_results: dict) -> Agent3Response:
@@ -20,40 +26,48 @@ class Agent3SimilarIncidentAnalyzer:
 
         Returns:
             Agent3Response with threshold-filtered, score-sorted top matches.
+            similar_incidents_found=False when all scores are below SIMILARITY_THRESHOLD.
         """
         try:
             logger.info("Agent3 started")
 
             if not agent2_results.get("success", False):
-                logger.info("No similar incidents found")
+                logger.info("No similar incidents found (Agent 2 unsuccessful)")
                 return self._build_no_match_response()
 
             similar_incidents = agent2_results.get("similar_incidents", [])
 
-            logger.info("Applying similarity threshold")
-            logger.info("Filtering low-score matches")
+            logger.info(
+                "Applying %.0f%% similarity threshold (%d candidates)",
+                self.SIMILARITY_THRESHOLD * 100,
+                len(similar_incidents),
+            )
             filtered_matches = self._filter_by_threshold(similar_incidents)
 
             if not filtered_matches:
-                logger.info("No similar incidents found")
+                logger.info(
+                    "No incidents met the %.0f%% threshold — treating as new incident",
+                    self.SIMILARITY_THRESHOLD * 100,
+                )
                 return self._build_no_match_response()
 
-            logger.info("Sorting matches")
+            logger.info("Sorting %d filtered matches by score", len(filtered_matches))
             sorted_matches = sorted(
                 filtered_matches,
                 key=lambda incident: incident.get("similarity_score", 0),
                 reverse=True,
             )
 
-            logger.info("Selecting top 5 incidents")
             top_matches = sorted_matches[: self.MAX_TOP_MATCHES]
 
-            logger.info("Similar incidents found")
-            logger.info("Agent3 completed")
+            logger.info(
+                "Agent3 completed — %d similar incident(s) above threshold",
+                len(top_matches),
+            )
             return Agent3Response(
                 success=True,
                 similar_incidents_found=True,
-                message="Similar incidents found.",
+                message=f"Found {len(top_matches)} similar incident(s) with similarity ≥ {int(self.SIMILARITY_THRESHOLD * 100)}%.",
                 match_count=len(top_matches),
                 top_matches=[
                     self._build_similar_incident_detail(match) for match in top_matches
@@ -100,11 +114,11 @@ class Agent3SimilarIncidentAnalyzer:
 
     @staticmethod
     def _build_no_match_response() -> Agent3Response:
-        logger.info("Agent3 completed")
+        logger.info("Agent3 completed — no similar incidents above threshold")
         return Agent3Response(
             success=True,
             similar_incidents_found=False,
-            message="No similar incidents found.",
+            message="No similar incidents found above the 50% threshold. This appears to be a new incident type.",
             match_count=0,
             top_matches=[],
         )
