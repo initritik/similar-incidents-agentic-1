@@ -1,0 +1,11 @@
+40-45 - incidents having empty description or short description
+50-55 - incidents(each completely different from each other; in in OPEN state; having empty resolution notes ("")). Now, create 60-65 
+where 60 is semantically similar to 50, 61 to 51 and so on. They should be in resolution state.
+
+
+
+when user submits a resolution notes then incident state should also be changed to RESOLVED state from OPEN or WORK_IN_PROGRESS in the MOCK_DATA files. create a api which does this and is automatically called when user submits a resolution. similarly, in the datafix file also, it should be append accordingly.
+
+
+
+Agent 1 will process and pass other agent only when incident is in OPEN state or WORK_IN_PROGRESS state. when a user enter a incident which is in RESOLVED state then agent 1 will say incident already resolved and stop the workflow at agent 1 itself. Other agents should be skipped.
