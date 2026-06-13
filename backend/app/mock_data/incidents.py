@@ -493,4 +493,267 @@ MOCK_INCIDENTS: list[Incident] = [
         assignment_group="Customer Account Support",
         assigned_to="Leena George",
     ),
+    
+    # 40-45 : Incidents with empty description or short description
+
+    Incident(
+        incident_number="INC000040",
+        short_description="",
+        description="",
+        state=IncidentState.OPEN,
+        resolution_notes=None,
+        created_date=datetime(2026, 6, 1, 9, 0),
+        updated_date=datetime(2026, 6, 1, 9, 0),
+        assignment_group="Application Support",
+        assigned_to="Rahul Nair",
+    ),
+
+    Incident(
+        incident_number="INC000041",
+        short_description="Login issue",
+        description="",
+        state=IncidentState.OPEN,
+        resolution_notes=None,
+        created_date=datetime(2026, 6, 1, 9, 15),
+        updated_date=datetime(2026, 6, 1, 9, 15),
+        assignment_group="Service Desk",
+        assigned_to="Priya Menon",
+    ),
+
+    Incident(
+        incident_number="INC000042",
+        short_description="",
+        description="User reported a problem.",
+        state=IncidentState.OPEN,
+        resolution_notes=None,
+        created_date=datetime(2026, 6, 1, 9, 30),
+        updated_date=datetime(2026, 6, 1, 9, 30),
+        assignment_group="IT Operations",
+        assigned_to="Ankit Sharma",
+    ),
+
+    Incident(
+        incident_number="INC000043",
+        short_description="Error",
+        description="",
+        state=IncidentState.OPEN,
+        resolution_notes=None,
+        created_date=datetime(2026, 6, 1, 9, 45),
+        updated_date=datetime(2026, 6, 1, 9, 45),
+        assignment_group="Application Support",
+        assigned_to="Sneha Roy",
+    ),
+
+    Incident(
+        incident_number="INC000044",
+        short_description="System issue",
+        description="Issue observed.",
+        state=IncidentState.OPEN,
+        resolution_notes=None,
+        created_date=datetime(2026, 6, 1, 10, 0),
+        updated_date=datetime(2026, 6, 1, 10, 0),
+        assignment_group="Infrastructure Support",
+        assigned_to="Vikram Das",
+    ),
+
+    Incident(
+        incident_number="INC000045",
+        short_description="",
+        description="",
+        state=IncidentState.OPEN,
+        resolution_notes=None,
+        created_date=datetime(2026, 6, 1, 10, 15),
+        updated_date=datetime(2026, 6, 1, 10, 15),
+        assignment_group="Service Desk",
+        assigned_to="Neha Kapoor",
+    ),
+
+
+    # 50-55 : Unique OPEN incidents
+
+    Incident(
+        incident_number="INC000050",
+        short_description="Payment settlement batch not completing",
+        description=(
+            "The nightly payment settlement process remains in a running state "
+            "for over four hours. Multiple transactions are awaiting settlement "
+            "confirmation, affecting reconciliation reports."
+        ),
+        state=IncidentState.OPEN,
+        resolution_notes=None,
+        created_date=datetime(2026, 6, 2, 8, 30),
+        updated_date=datetime(2026, 6, 2, 8, 30),
+        assignment_group="Payments Platform",
+        assigned_to="Arjun Pillai",
+    ),
+
+    Incident(
+        incident_number="INC000051",
+        short_description="Employee VPN connection failing",
+        description=(
+            "Remote employees are unable to establish VPN sessions. Authentication "
+            "succeeds but the tunnel disconnects immediately after connection."
+        ),
+        state=IncidentState.OPEN,
+        resolution_notes=None,
+        created_date=datetime(2026, 6, 2, 9, 15),
+        updated_date=datetime(2026, 6, 2, 9, 15),
+        assignment_group="Network Operations",
+        assigned_to="Rohit Mehta",
+    ),
+
+    Incident(
+        incident_number="INC000052",
+        short_description="Inventory synchronization delay",
+        description=(
+            "Product stock updates from retail stores are not reaching the central "
+            "inventory database. Quantities shown online differ from store records."
+        ),
+        state=IncidentState.OPEN,
+        resolution_notes=None,
+        created_date=datetime(2026, 6, 2, 10, 0),
+        updated_date=datetime(2026, 6, 2, 10, 0),
+        assignment_group="Retail Systems",
+        assigned_to="Asha Nambiar",
+    ),
+
+    Incident(
+        incident_number="INC000053",
+        short_description="Email attachments blocked unexpectedly",
+        description=(
+            "Several users report that PDF attachments are being rejected by the "
+            "mail gateway even though the files pass antivirus scanning."
+        ),
+        state=IncidentState.OPEN,
+        resolution_notes=None,
+        created_date=datetime(2026, 6, 2, 10, 45),
+        updated_date=datetime(2026, 6, 2, 10, 45),
+        assignment_group="Messaging Services",
+        assigned_to="Karthik Rao",
+    ),
+
+    Incident(
+        incident_number="INC000054",
+        short_description="Analytics dashboard displaying stale data",
+        description=(
+            "Business intelligence dashboards have not refreshed since yesterday. "
+            "Scheduled ETL jobs appear successful but new metrics are missing."
+        ),
+        state=IncidentState.OPEN,
+        resolution_notes=None,
+        created_date=datetime(2026, 6, 2, 11, 30),
+        updated_date=datetime(2026, 6, 2, 11, 30),
+        assignment_group="Data Engineering",
+        assigned_to="Divya Nair",
+    ),
+
+    Incident(
+        incident_number="INC000055",
+        short_description="Warehouse barcode scanners not syncing",
+        description=(
+            "Barcode scanners in the east distribution center can scan items "
+            "locally but fail to upload transaction records to the backend system."
+        ),
+        state=IncidentState.OPEN,
+        resolution_notes=None,
+        created_date=datetime(2026, 6, 2, 12, 15),
+        updated_date=datetime(2026, 6, 2, 12, 15),
+        assignment_group="Warehouse Technology",
+        assigned_to="Manoj Kumar",
+    ),
+
+
+    # 60-65 : Semantically similar to 50-55 respectively
+
+    Incident(
+        incident_number="INC000060",
+        short_description="Financial transaction reconciliation queue stuck",
+        description=(
+            "End-of-day transaction reconciliation jobs are not completing. "
+            "Several payment records remain pending in the processing queue, "
+            "delaying account settlement activities."
+        ),
+        state=IncidentState.OPEN,
+        resolution_notes=None,
+        created_date=datetime(2026, 6, 3, 8, 20),
+        updated_date=datetime(2026, 6, 3, 8, 20),
+        assignment_group="Payments Platform",
+        assigned_to="Arjun Pillai",
+    ),
+
+    Incident(
+        incident_number="INC000061",
+        short_description="Corporate remote access disconnecting after login",
+        description=(
+            "Users working from home can authenticate successfully to the remote "
+            "access gateway, but their VPN sessions terminate within seconds."
+        ),
+        state=IncidentState.OPEN,
+        resolution_notes=None,
+        created_date=datetime(2026, 6, 3, 9, 10),
+        updated_date=datetime(2026, 6, 3, 9, 10),
+        assignment_group="Network Operations",
+        assigned_to="Rohit Mehta",
+    ),
+
+    Incident(
+        incident_number="INC000062",
+        short_description="Stock level updates not reaching master inventory",
+        description=(
+            "Inventory changes recorded in branch locations are not propagating "
+            "to the central stock management system, causing quantity mismatches."
+        ),
+        state=IncidentState.OPEN,
+        resolution_notes=None,
+        created_date=datetime(2026, 6, 3, 10, 0),
+        updated_date=datetime(2026, 6, 3, 10, 0),
+        assignment_group="Retail Systems",
+        assigned_to="Asha Nambiar",
+    ),
+
+    Incident(
+        incident_number="INC000063",
+        short_description="Mail server rejecting document attachments",
+        description=(
+            "Employees are unable to send PDF documents through email. The mail "
+            "filter blocks attachments despite no malware being detected."
+        ),
+        state=IncidentState.OPEN,
+        resolution_notes=None,
+        created_date=datetime(2026, 6, 3, 10, 50),
+        updated_date=datetime(2026, 6, 3, 10, 50),
+        assignment_group="Messaging Services",
+        assigned_to="Karthik Rao",
+    ),
+
+    Incident(
+        incident_number="INC000064",
+        short_description="Reporting portal not showing latest metrics",
+        description=(
+            "Management reports continue to display yesterday's figures. Data "
+            "refresh pipelines appear to run successfully but dashboard values "
+            "remain unchanged."
+        ),
+        state=IncidentState.OPEN,
+        resolution_notes=None,
+        created_date=datetime(2026, 6, 3, 11, 40),
+        updated_date=datetime(2026, 6, 3, 11, 40),
+        assignment_group="Data Engineering",
+        assigned_to="Divya Nair",
+    ),
+
+    Incident(
+        incident_number="INC000065",
+        short_description="Handheld scanners unable to upload warehouse transactions",
+        description=(
+            "Scanning devices used in the fulfillment center capture item movements "
+            "correctly but fail to synchronize transaction logs with the backend."
+        ),
+        state=IncidentState.OPEN,
+        resolution_notes=None,
+        created_date=datetime(2026, 6, 3, 12, 25),
+        updated_date=datetime(2026, 6, 3, 12, 25),
+        assignment_group="Warehouse Technology",
+        assigned_to="Manoj Kumar",
+    ),
 ]
