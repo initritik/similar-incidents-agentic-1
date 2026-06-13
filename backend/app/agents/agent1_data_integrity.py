@@ -2,6 +2,7 @@ import logging
 from datetime import datetime
 
 from app.models import Incident
+from app.models.enums import IncidentState
 from app.schemas import Agent1Response
 from app.services import IncidentService
 from app.utils import is_valid_incident_number
@@ -54,6 +55,19 @@ class Agent1DataIntegrityChecker:
                 missing_fields=missing_fields,
             )
 
+        logger.info("Checking incident state")
+        if incident.state == IncidentState.RESOLVED:
+            logger.info("Incident is already resolved — stopping workflow at Agent 1")
+            return Agent1Response(
+                success=False,
+                incident_resolved=True,
+                message=(
+                    f"Incident {incident_number} is already in RESOLVED state. "
+                    "No further processing is required."
+                ),
+                incident=incident,
+            )
+
         logger.info("Validation passed")
         return Agent1Response(
             success=True,
@@ -80,4 +94,3 @@ class Agent1DataIntegrityChecker:
             return False
 
         return False
-

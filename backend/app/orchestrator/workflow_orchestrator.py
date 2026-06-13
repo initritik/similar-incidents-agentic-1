@@ -41,10 +41,24 @@ class WorkflowOrchestrator:
         workflow = self.execute_agent1(workflow.workflow_id, incident_number)
 
         if workflow.overall_status == WorkflowStatus.FAILED:
+            # Check whether the failure was due to the incident being RESOLVED
+            agent1_result = self.status_store.get_agent_result(workflow.workflow_id, "Agent 1")
+            incident_resolved = (
+                agent1_result.get("incident_resolved", False) if agent1_result else False
+            )
+
+            if incident_resolved:
+                skip_reason = (
+                    "Skipped — incident is already in RESOLVED state. "
+                    "No further processing required."
+                )
+            else:
+                skip_reason = "Skipped because Agent 1 failed."
+
             workflow = self._skip_agents(
                 workflow.workflow_id,
                 ("Agent 2", "Agent 3", "Agent 4", "Agent 5"),
-                "Skipped because Agent 1 failed.",
+                skip_reason,
             )
             logger.info("Workflow completed")
             return workflow
@@ -171,12 +185,18 @@ class WorkflowOrchestrator:
                 completed_at=datetime.now(UTC),
             )
         else:
-            logger.info("Agent 1 failed")
+            if result.incident_resolved:
+                logger.info("Agent 1 stopped — incident already resolved")
+                current_task = "Incident is already resolved. Workflow stopped."
+            else:
+                logger.info("Agent 1 failed")
+                current_task = "Data integrity validation failed."
+
             workflow = self.status_store.update_agent_status(
                 workflow_id=workflow_id,
                 agent_name="Agent 1",
                 status=WorkflowStatus.FAILED,
-                current_task="Data integrity validation failed.",
+                current_task=current_task,
                 message=result.message,
                 completed_at=datetime.now(UTC),
             )
@@ -197,14 +217,8 @@ class WorkflowOrchestrator:
         )
 
         try:
-            incident = IncidentService.get_incident_by_number(incident_number)
-            if incident is None:
-                raise ValueError(f"Incident {incident_number} not found")
-
-            if self.agent2 is None:
-                self.agent2 = Agent2SimilaritySearch()
-            result = self.agent2.search_similar_incidents(incident)
-
+            self.agent2 = Agent2SimilaritySearch(incident_number)
+            result = self.agent2.search()
             self.status_store.store_agent_result(
                 workflow_id=workflow_id,
                 agent_name="Agent 2",
@@ -212,7 +226,7 @@ class WorkflowOrchestrator:
             )
 
             if result.success:
-                logger.info(f"Agent 2 completed. Found {result.match_count} similar incidents")
+                logger.info("Agent 2 completed successfully")
                 workflow = self.status_store.update_agent_status(
                     workflow_id=workflow_id,
                     agent_name="Agent 2",
@@ -222,7 +236,7 @@ class WorkflowOrchestrator:
                     completed_at=datetime.now(UTC),
                 )
             else:
-                logger.error("Agent 2 failed")
+                logger.info("Agent 2 failed")
                 workflow = self.status_store.update_agent_status(
                     workflow_id=workflow_id,
                     agent_name="Agent 2",
@@ -253,7 +267,7 @@ class WorkflowOrchestrator:
             workflow_id=workflow_id,
             agent_name="Agent 3",
             status=WorkflowStatus.RUNNING,
-            current_task="Filtering and ranking similar incidents.",
+            current_task="Retrieving and ranking similar incidents.",
             message="Agent 3 started.",
             started_at=datetime.now(UTC),
         )
@@ -261,10 +275,9 @@ class WorkflowOrchestrator:
         try:
             agent2_results = self.status_store.get_agent_result(workflow_id, "Agent 2")
             if agent2_results is None:
-                raise ValueError("Agent 2 results not found in workflow state")
+                raise ValueError("Agent 2 results not found in workflow state.")
 
-            result = self.agent3.analyze(agent2_results)
-
+            result = self.agent3.analyze(agent2_results=agent2_results)
             self.status_store.store_agent_result(
                 workflow_id=workflow_id,
                 agent_name="Agent 3",
@@ -272,10 +285,7 @@ class WorkflowOrchestrator:
             )
 
             if result.success:
-                logger.info(
-                    f"Agent 3 completed. Found {result.match_count} top match(es). "
-                    f"similar_incidents_found={result.similar_incidents_found}."
-                )
+                logger.info("Agent 3 completed successfully")
                 workflow = self.status_store.update_agent_status(
                     workflow_id=workflow_id,
                     agent_name="Agent 3",
@@ -285,7 +295,7 @@ class WorkflowOrchestrator:
                     completed_at=datetime.now(UTC),
                 )
             else:
-                logger.error("Agent 3 failed")
+                logger.info("Agent 3 failed")
                 workflow = self.status_store.update_agent_status(
                     workflow_id=workflow_id,
                     agent_name="Agent 3",

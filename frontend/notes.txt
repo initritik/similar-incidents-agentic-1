@@ -4,7 +4,7 @@ where 60 is semantically similar to 50, 61 to 51 and so on. They should be in re
 
 
 
-when user submits a resolution notes then incident state should also be changed to RESOLVED state from OPEN or WORK_IN_PROGRESS in the MOCK_DATA files. create a api which does this and is automatically called when user submits a resolution. similarly, in the datafix file also, it should be append accordingly.
+when user submits a resolution notes then incident state should also be changed to RESOLVED state from OPEN or WORK_IN_PROGRESS in the MOCK_DATA files. create a api which does this and is automatically called when user submits a resolution. similarly, in the datafix file also, it should be appended accordingly.
 
 
 
