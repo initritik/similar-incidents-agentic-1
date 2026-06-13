@@ -40,25 +40,26 @@ class WorkflowOrchestrator:
         # ── Agent 1 ──────────────────────────────────────────────────────────
         workflow = self.execute_agent1(workflow.workflow_id, incident_number)
 
-        if workflow.overall_status == WorkflowStatus.FAILED:
-            # Check whether the failure was due to the incident being RESOLVED
-            agent1_result = self.status_store.get_agent_result(workflow.workflow_id, "Agent 1")
-            incident_resolved = (
-                agent1_result.get("incident_resolved", False) if agent1_result else False
-            )
-
-            if incident_resolved:
-                skip_reason = (
-                    "Skipped — incident is already in RESOLVED state. "
-                    "No further processing required."
-                )
-            else:
-                skip_reason = "Skipped because Agent 1 failed."
-
+        # Early-exit: incident is already RESOLVED — Agent 1 is SKIPPED,
+        # skip the remaining agents with a clear resolved-state message.
+        agent1_result = self.status_store.get_agent_result(workflow.workflow_id, "Agent 1")
+        incident_resolved = (
+            agent1_result.get("incident_resolved", False) if agent1_result else False
+        )
+        if incident_resolved:
             workflow = self._skip_agents(
                 workflow.workflow_id,
                 ("Agent 2", "Agent 3", "Agent 4", "Agent 5"),
-                skip_reason,
+                "Skipped — incident is already in RESOLVED state. No further processing required.",
+            )
+            logger.info("Workflow completed — incident already resolved")
+            return workflow
+
+        if workflow.overall_status == WorkflowStatus.FAILED:
+            workflow = self._skip_agents(
+                workflow.workflow_id,
+                ("Agent 2", "Agent 3", "Agent 4", "Agent 5"),
+                "Skipped because Agent 1 failed.",
             )
             logger.info("Workflow completed")
             return workflow
@@ -99,7 +100,6 @@ class WorkflowOrchestrator:
 
         if similar_incidents_found:
             # ── Agent 5 path: similar incidents found ─────────────────────────
-            # Skip Agent 4 — similar incidents found, Agent 5 handles recommendation
             workflow = self._skip_agents(
                 workflow.workflow_id,
                 ("Agent 4",),
@@ -111,17 +111,9 @@ class WorkflowOrchestrator:
             )
         else:
             # ── Agent 4 path: no similar incidents (new incident) ────────────
-            #
-            # Two sub-cases:
-            #   A) resolution_notes provided  → Agent 4 ingests it; skip Agent 5
-            #   B) resolution_notes NOT provided → Skip Agent 4 with "awaiting input"
-            #      message so the frontend knows it must prompt the user.
-            #      Agent 5 is also skipped (no similar incidents to recommend from).
-
             has_resolution = bool(resolution_notes and resolution_notes.strip())
 
             if has_resolution:
-                # Sub-case A: resolution data available — run Agent 4
                 workflow = self.execute_agent4(
                     workflow_id=workflow.workflow_id,
                     incident_number=incident_number,
@@ -136,9 +128,6 @@ class WorkflowOrchestrator:
                     "Skipped — no similar incidents found. Resolution captured via Agent 4.",
                 )
             else:
-                # Sub-case B: no resolution data — skip both Agent 4 and Agent 5.
-                # The frontend will detect agent_3.similar_incidents_found=False and
-                # agent_4.saved=False / status=SKIPPED to show the capture form.
                 workflow = self._skip_agents(
                     workflow.workflow_id,
                     ("Agent 4",),
@@ -184,19 +173,24 @@ class WorkflowOrchestrator:
                 message=result.message,
                 completed_at=datetime.now(UTC),
             )
+        elif result.incident_resolved:
+            # Incident is already resolved — treat Agent 1 as SKIPPED, not FAILED
+            logger.info("Agent 1 skipped — incident is already in RESOLVED state")
+            workflow = self.status_store.update_agent_status(
+                workflow_id=workflow_id,
+                agent_name="Agent 1",
+                status=WorkflowStatus.SKIPPED,
+                current_task="Incident is already resolved. Workflow stopped.",
+                message=result.message,
+                completed_at=datetime.now(UTC),
+            )
         else:
-            if result.incident_resolved:
-                logger.info("Agent 1 stopped — incident already resolved")
-                current_task = "Incident is already resolved. Workflow stopped."
-            else:
-                logger.info("Agent 1 failed")
-                current_task = "Data integrity validation failed."
-
+            logger.info("Agent 1 failed")
             workflow = self.status_store.update_agent_status(
                 workflow_id=workflow_id,
                 agent_name="Agent 1",
                 status=WorkflowStatus.FAILED,
-                current_task=current_task,
+                current_task="Data integrity validation failed.",
                 message=result.message,
                 completed_at=datetime.now(UTC),
             )
@@ -414,13 +408,11 @@ class WorkflowOrchestrator:
         )
 
         try:
-            # Retrieve Agent 1 output for original incident context
             agent1_results = self.status_store.get_agent_result(workflow_id, "Agent 1")
             original_incident: dict = {}
             if agent1_results and agent1_results.get("incident"):
                 original_incident = agent1_results["incident"]
 
-            # Retrieve Agent 3 output (top matches)
             agent3_results = self.status_store.get_agent_result(workflow_id, "Agent 3")
             if agent3_results is None:
                 raise ValueError("Agent 3 results not found in workflow state.")
