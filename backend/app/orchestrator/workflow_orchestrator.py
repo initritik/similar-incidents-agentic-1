@@ -211,8 +211,17 @@ class WorkflowOrchestrator:
         )
 
         try:
-            self.agent2 = Agent2SimilaritySearch(incident_number)
-            result = self.agent2.search()
+            # Retrieve the validated incident object from Agent 1's stored result
+            agent1_result = self.status_store.get_agent_result(workflow_id, "Agent 1")
+            if not agent1_result or not agent1_result.get("incident"):
+                raise ValueError("Agent 1 incident data not found in workflow state.")
+
+            from app.models.incident import Incident
+            incident = Incident(**agent1_result["incident"])
+
+            self.agent2 = Agent2SimilaritySearch()
+            result = self.agent2.search_similar_incidents(incident)
+
             self.status_store.store_agent_result(
                 workflow_id=workflow_id,
                 agent_name="Agent 2",
