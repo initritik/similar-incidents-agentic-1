@@ -501,7 +501,7 @@ MOCK_INCIDENTS: list[Incident] = [
         "stage. Queue ID ORD_QUEUE_12 shows pending transactions for the last "
         "three hours, causing delays in shipment processing."
     ),
-    state=IncidentState.OPEN,
+    state=IncidentState.RESOLVED,
     resolution_notes="Investigation initiated. Queue service logs are being analyzed for bottlenecks.",
     created_date=datetime(2026, 6, 8, 14, 20),
     updated_date=datetime(2026, 6, 8, 16, 45),
@@ -517,7 +517,7 @@ MOCK_INCIDENTS: list[Incident] = [
         "SHIP_QUEUE_08 has reported a growing backlog of pending records "
         "over the past two hours, resulting in delayed warehouse operations."
     ),
-    state=IncidentState.OPEN,
+    state=IncidentState.RESOLVED,
     resolution_notes=(
         "Initial assessment underway. Messaging service health and queue "
         "consumer performance metrics are being reviewed."
@@ -530,8 +530,8 @@ MOCK_INCIDENTS: list[Incident] = [
     Incident(
     incident_number="INC000033",
     short_description="Shipment scheduling is too much delayed for center",
-    description=(""),
-    state=IncidentState.OPEN,
+    description=("Shipment scheduling is too much delayed for center"),
+    state=IncidentState.RESOLVED,
     resolution_notes=(
         "Initial assessment underway. Messaging service health and queue "
         "consumer performance metrics are being reviewed."
