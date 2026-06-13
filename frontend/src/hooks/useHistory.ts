@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
+import type { WorkflowExecution } from "@/types/workflow";
+import type { AgentLogs } from "@/hooks/useWorkflowRunner";
 
 export interface HistoryEntry {
   /** Unique session ID (timestamp-based) */
@@ -9,6 +11,10 @@ export interface HistoryEntry {
   searched_at: string;
   /** Final workflow overall status */
   overall_status: "PENDING" | "RUNNING" | "COMPLETED" | "FAILED" | "SKIPPED" | null;
+  /** Full workflow snapshot (stored when workflow reaches terminal state) */
+  workflowSnapshot?: WorkflowExecution | null;
+  /** Agent logs snapshot (stored when workflow reaches terminal state) */
+  agentLogsSnapshot?: AgentLogs | null;
 }
 
 const STORAGE_KEY = "incident_ai_history";

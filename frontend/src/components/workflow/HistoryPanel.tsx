@@ -1,13 +1,18 @@
-import { Clock, Trash2, X, CheckCircle2, XCircle, Loader2, SkipForward } from "lucide-react";
+import { Clock, Trash2, X, CheckCircle2, XCircle, Loader2, SkipForward, Plus } from "lucide-react";
 import type { HistoryEntry } from "@/hooks/useHistory";
 import { cn } from "@/utils/cn";
 
 interface HistoryPanelProps {
   entries: HistoryEntry[];
-  onSelect: (incidentNumber: string) => void;
+  /** Called when user clicks a history entry — passes the full entry (with snapshot) */
+  onSelect: (entry: HistoryEntry) => void;
   onRemove: (id: string) => void;
   onClear: () => void;
   currentIncidentNumber?: string | null;
+  /** Whether we're currently viewing a historical snapshot (not a live workflow) */
+  isViewingHistory?: boolean;
+  /** Called when user clicks "Search New Workflow" */
+  onNewSearch?: () => void;
 }
 
 function StatusIcon({ status }: { status: HistoryEntry["overall_status"] }) {
@@ -44,9 +49,11 @@ export function HistoryPanel({
   onRemove,
   onClear,
   currentIncidentNumber,
+  isViewingHistory = false,
+  onNewSearch,
 }: HistoryPanelProps) {
   return (
-    <div className="rounded-xl border border-rl-gold/12 bg-[#0E1E3A]/60 overflow-hidden">
+    <div className="rounded-xl border border-rl-gold/12 bg-[#0E1E3A]/60 overflow-hidden flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-rl-gold/10">
         <div className="flex items-center gap-2">
@@ -66,6 +73,23 @@ export function HistoryPanel({
         )}
       </div>
 
+      {/* Search New Workflow button — shown when viewing a historical snapshot */}
+      {isViewingHistory && (
+        <div className="px-3 py-2.5 border-b border-rl-gold/10">
+          <button
+            onClick={onNewSearch}
+            className={cn(
+              "w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg",
+              "text-[11px] font-semibold text-rl-gold border border-rl-gold/40",
+              "bg-rl-gold/8 hover:bg-rl-gold/15 transition-colors"
+            )}
+          >
+            <Plus className="size-3" aria-hidden />
+            Search New Workflow
+          </button>
+        </div>
+      )}
+
       {/* Entries */}
       <div className="max-h-[280px] overflow-y-auto">
         {entries.length === 0 ? (
@@ -82,7 +106,7 @@ export function HistoryPanel({
               return (
                 <li key={entry.id} className="group relative">
                   <button
-                    onClick={() => onSelect(entry.incident_number)}
+                    onClick={() => onSelect(entry)}
                     className={cn(
                       "w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors",
                       "hover:bg-rl-gold/8",
@@ -106,7 +130,7 @@ export function HistoryPanel({
                     </div>
                     {isActive && (
                       <span className="text-[9px] font-bold uppercase tracking-wider text-rl-gold/50">
-                        current
+                        {isViewingHistory ? "viewing" : "current"}
                       </span>
                     )}
                   </button>
