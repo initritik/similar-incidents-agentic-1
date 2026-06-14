@@ -1,0 +1,49 @@
+import { createContext, useContext, useState, useCallback } from "react";
+import type { PropsWithChildren } from "react";
+
+export interface UserProfile {
+  username: string;
+  appName: string;
+  welcomeTeam: string;
+}
+
+const USERS: Record<string, { password: string; appName: string; welcomeTeam: string }> = {
+  arijit:  { password: "arijit",  appName: "AMS AI RESOLUTION",     welcomeTeam: "AMS"     },
+  aswini:  { password: "aswini",  appName: "ORYX AI RESOLUTION",    welcomeTeam: "ORYX"    },
+  paulomi: { password: "paulomi", appName: "IRELAND AI RESOLUTION",  welcomeTeam: "IRELAND" },
+  admin:   { password: "admin",   appName: "IRELAND AI RESOLUTION",  welcomeTeam: "ADMIN"   },
+};
+
+interface AuthContextValue {
+  user: UserProfile | null;
+  login: (username: string, password: string) => boolean;
+  logout: () => void;
+}
+
+const AuthContext = createContext<AuthContextValue | null>(null);
+
+export function AuthProvider({ children }: PropsWithChildren) {
+  const [user, setUser] = useState<UserProfile | null>(null);
+
+  const login = useCallback((username: string, password: string): boolean => {
+    const key = username.trim().toLowerCase();
+    const record = USERS[key];
+    if (!record || record.password !== password.trim()) return false;
+    setUser({ username: key, appName: record.appName, welcomeTeam: record.welcomeTeam });
+    return true;
+  }, []);
+
+  const logout = useCallback(() => setUser(null), []);
+
+  return (
+    <AuthContext.Provider value={{ user, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
+  return ctx;
+}
