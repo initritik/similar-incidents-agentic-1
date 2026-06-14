@@ -29,7 +29,7 @@ class ResolveIncidentRequest(BaseModel):
     resolution_notes: str = Field(
         ...,
         min_length=1,
-        description="Human-readable notes describing how the incident was resolved.",
+        description="Human-readable notes describing how the ticket was resolved.",
     )
     datafix_id: str | None = Field(
         default=None,
@@ -60,17 +60,17 @@ class ResolveIncidentResponse(BaseModel):
     "/{incident_number}/resolve",
     response_model=ResolveIncidentResponse,
     status_code=status.HTTP_200_OK,
-    summary="Resolve an incident and optionally record a datafix",
+    summary="Resolve a ticket and optionally record a datafix",
     description=(
-        "Transitions the incident state from OPEN or WORK_IN_PROGRESS to RESOLVED, "
+        "Transitions the ticket state from OPEN or WORK_IN_PROGRESS to RESOLVED, "
         "persists the resolution notes, and — when datafix details are supplied — "
         "appends a new entry to the datafix store.  "
         "This endpoint is called automatically by Agent 4 after a successful "
         "knowledge-base ingestion."
     ),
     responses={
-        status.HTTP_400_BAD_REQUEST: {"description": "Invalid incident number format."},
-        status.HTTP_404_NOT_FOUND: {"description": "Incident not found."},
+        status.HTTP_400_BAD_REQUEST: {"description": "Invalid ticket number format."},
+        status.HTTP_404_NOT_FOUND: {"description": "Ticket not found."},
     },
 )
 def resolve_incident(
@@ -83,8 +83,8 @@ def resolve_incident(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=(
-                "Invalid incident identifier format. "
-                "Expected INC followed by 6 digits (e.g. INC000005)."
+                "Invalid ticket identifier format. "
+                "Expected INC000001 or SCTASK005."
             ),
         )
 
@@ -96,7 +96,7 @@ def resolve_incident(
     if updated_incident is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Incident {incident_number} not found.",
+            detail=f"Ticket {incident_number} not found.",
         )
 
     # ── Optionally append datafix ─────────────────────────────────────────────
@@ -122,7 +122,7 @@ def resolve_incident(
             )
             datafix_appended = True
             logger.info(
-                "Datafix %s appended for resolved incident %s.",
+                "Datafix %s appended for resolved ticket %s.",
                 datafix_id,
                 incident_number,
             )
@@ -135,7 +135,7 @@ def resolve_incident(
     return ResolveIncidentResponse(
         success=True,
         message=(
-            f"Incident {incident_number} resolved successfully."
+            f"Ticket {incident_number} resolved successfully."
             + (f" Datafix {datafix_id} recorded." if datafix_appended else "")
         ),
         incident=updated_incident,

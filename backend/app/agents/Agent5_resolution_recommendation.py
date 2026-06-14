@@ -59,17 +59,17 @@ class Agent5ResolutionRecommendation:
 
             # Guard: only run when similar incidents were found
             if not agent3_results.get("similar_incidents_found", False):
-                logger.info("Agent5 skipped – no similar incidents found by Agent3")
+                logger.info("Agent5 skipped – no similar tickets found by Agent3")
                 return self._no_match_response()
 
             top_matches: list[dict] = agent3_results.get("top_matches", [])
 
-            logger.info("Fetching resolved similar incidents")
+            logger.info("Fetching resolved similar tickets")
             logger.info("Filtering resolved records")
             resolved = self._filter_resolved(top_matches)
 
             if not resolved:
-                logger.info("Agent5 – no resolved incidents remain after filtering")
+                logger.info("Agent5 – no resolved tickets remain after filtering")
                 return self._no_match_response()
 
             logger.info("Extracting resolution notes")
@@ -170,10 +170,10 @@ class Agent5ResolutionRecommendation:
         notes_block = "\n".join(f"  - {note}" for note in unique_notes)
 
         summary = (
-            f"Based on {count} historically resolved incident(s) "
+            f"Based on {count} historically resolved ticket(s) "
             f"({incident_refs}) with up to {top_score_pct}% semantic similarity "
-            f"to the current incident, the following resolution is recommended:\n\n"
-            f"Historical resolution notes from matching incidents:\n{notes_block}\n\n"
+            f"to the current ticket, the following resolution is recommended:\n\n"
+            f"Historical resolution notes from matching tickets:\n{notes_block}\n\n"
             f"Recommended action:\n"
             f"  1. Review the resolution notes above for the most relevant pattern.\n"
             f"  2. Identify the specific resource identifier for the affected entity "
@@ -182,9 +182,9 @@ class Agent5ResolutionRecommendation:
             f"section, substituting the environment-specific placeholders.\n"
             f"  4. Verify the fix by confirming the user can access the affected "
             f"resource.\n"
-            f"  5. Update the incident with resolution notes and close it.\n\n"
+            f"  5. Update the ticket with resolution notes and close it.\n\n"
             f"Note: This recommendation is synthesised from {count} similar "
-            f"resolved incident(s) stored in the knowledge base."
+            f"resolved ticket(s) stored in the knowledge base."
         )
         return summary
 
@@ -208,11 +208,11 @@ class Agent5ResolutionRecommendation:
             ]
             if descriptions:
                 return (
-                    "No datafix code found in matching incidents.\n\n"
-                    "Datafix descriptions from similar resolved incidents:\n"
+                    "No datafix code found in matching tickets.\n\n"
+                    "Datafix descriptions from similar resolved tickets:\n"
                     + "\n".join(f"  - {d}" for d in descriptions)
                 )
-            return "No datafix information available from similar resolved incidents."
+            return "No datafix information available from similar resolved tickets."
 
         # Use the code from the best-scoring match that has code
         best_code = datafix_codes[0]
@@ -220,7 +220,7 @@ class Agent5ResolutionRecommendation:
 
         header = (
             "The following datafix pattern is based on previously resolved "
-            "incidents.\nReplace all placeholder values with the actual "
+            "tickets.\nReplace all placeholder values with the actual "
             "environment-specific identifiers before executing.\n\n"
         )
 
@@ -272,7 +272,7 @@ class Agent5ResolutionRecommendation:
         logger.info("Agent5 completed")
         return Agent5Response(
             success=False,
-            message="No resolved similar incidents available for recommendation.",
+            message="No resolved similar tickets available for recommendation.",
             recommended_resolution="",
             recommended_datafix="",
             source_incident_numbers=[],

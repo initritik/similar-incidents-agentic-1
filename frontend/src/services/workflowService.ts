@@ -174,11 +174,11 @@ export const workflowService = {
    * Start a new workflow for the given incident number (non-streaming, returns final state).
    */
   async start(payload: StartWorkflowRequest): Promise<WorkflowExecution> {
-    const incidentRegex = /^INC\d{6}$/;
+    const incidentRegex = /^(?:INC\d{6}|SCTASK\d+)$/i;
     if (!incidentRegex.test(payload.incident_number.toUpperCase())) {
       throw new APIError(
         400,
-        "Invalid incident identifier. Expected format: INC followed by 6 digits (e.g., INC000001).",
+        "Invalid ticket identifier. Expected format: INC000001 or SCTASK005.",
       );
     }
 

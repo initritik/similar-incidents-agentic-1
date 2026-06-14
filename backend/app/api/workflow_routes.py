@@ -34,7 +34,7 @@ def _sse_line(event_type: str, data: dict) -> str:
     "/start",
     response_model=WorkflowExecution,
     status_code=status.HTTP_200_OK,
-    summary="Start incident resolution workflow",
+    summary="Start ticket resolution workflow",
     description=(
         "Create a workflow run, execute Agent 1 data integrity validation, "
         "store workflow status, and return the current workflow details."
@@ -42,7 +42,7 @@ def _sse_line(event_type: str, data: dict) -> str:
     responses={
         status.HTTP_400_BAD_REQUEST: {
             "model": MessageResponse,
-            "description": "Invalid incident identifier format.",
+            "description": "Invalid ticket identifier format.",
         },
         status.HTTP_422_UNPROCESSABLE_ENTITY: {
             "model": MessageResponse,
@@ -52,16 +52,16 @@ def _sse_line(event_type: str, data: dict) -> str:
 )
 def start_workflow(request: StartWorkflowRequest) -> WorkflowExecution:
     """
-    Start a new incident resolution workflow.
+    Start a new ticket resolution workflow.
 
-    Validates the incident identifier, executes the full 5-agent pipeline,
+    Validates the ticket identifier, executes the full 5-agent pipeline,
     and returns the complete workflow execution state.
     """
     if not is_valid_incident_number(request.incident_number):
-        logger.warning(f"Invalid incident number format: {request.incident_number}")
+        logger.warning(f"Invalid ticket number format: {request.incident_number}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid incident identifier format. Expected format: INC followed by 6 digits (e.g., INC000001).",
+            detail="Invalid ticket identifier format. Expected format: INC000001 or SCTASK005.",
         )
 
     try:
@@ -122,14 +122,14 @@ def get_workflow(workflow_id: str) -> WorkflowExecution:
     "/stream",
     summary="Start a workflow and stream agent events via SSE",
     description=(
-        "Starts the incident resolution pipeline and streams real-time agent status "
+        "Starts the ticket resolution pipeline and streams real-time agent status "
         "updates as Server-Sent Events. Each event contains agent name, status, "
         "current task, message, and result data as it becomes available."
     ),
     responses={
         status.HTTP_400_BAD_REQUEST: {
             "model": MessageResponse,
-            "description": "Invalid incident identifier format.",
+            "description": "Invalid ticket identifier format.",
         },
     },
 )
@@ -148,7 +148,7 @@ def stream_workflow(request: StartWorkflowRequest) -> StreamingResponse:
     if not is_valid_incident_number(request.incident_number):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid incident identifier format. Expected format: INC followed by 6 digits (e.g., INC000001).",
+            detail="Invalid ticket identifier format. Expected format: INC000001 or SCTASK005.",
         )
 
     # A thread-safe queue bridges the orchestrator thread → generator

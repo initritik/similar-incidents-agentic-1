@@ -213,10 +213,10 @@ export function useWorkflowRunner(): WorkflowRunnerState & WorkflowRunnerActions
       if (!mountedRef.current) return;
 
       // Validate locally before streaming
-      const incidentRegex = /^INC\d{6}$/i;
+      const incidentRegex = /^(?:INC\d{6}|SCTASK\d+)$/i;
       if (!incidentRegex.test(payload.incident_number)) {
         setError(
-          "Invalid incident identifier. Expected format: INC followed by 6 digits (e.g., INC000001).",
+          "Invalid ticket identifier. Expected format: INC000001 or SCTASK005.",
         );
         return;
       }

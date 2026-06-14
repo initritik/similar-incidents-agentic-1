@@ -12,12 +12,12 @@ router = APIRouter(prefix="/api/datafixes", tags=["Datafixes"])
 @router.get(
     "/{incident_number}",
     response_model=list[Datafix],
-    summary="Get datafixes by incident number",
-    description="Retrieve all mock datafix records associated with an incident.",
+    summary="Get datafixes by ticket number",
+    description="Retrieve all mock datafix records associated with a ticket.",
     responses={
         status.HTTP_400_BAD_REQUEST: {
             "model": MessageResponse,
-            "description": "Invalid incident number format.",
+            "description": "Invalid ticket number format.",
         },
     },
 )
@@ -25,7 +25,7 @@ def get_datafixes(incident_number: str) -> list[Datafix] | JSONResponse:
     if not is_valid_incident_number(incident_number):
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
-            content={"message": "Invalid incident number format"},
+            content={"message": "Invalid ticket number format"},
         )
 
     return DatafixService.get_datafixes_by_incident_number(incident_number)

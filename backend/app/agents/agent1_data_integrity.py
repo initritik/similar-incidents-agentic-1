@@ -29,17 +29,17 @@ class Agent1DataIntegrityChecker:
             return Agent1Response(
                 success=False,
                 message=(
-                    "Please enter a valid incident identifier in the format INC "
-                    "followed by 6 digits."
+                    "Please enter a valid ticket identifier in the format "
+                    "INC000001 or SCTASK005."
                 ),
             )
 
-        logger.info("Fetching incident")
+        logger.info("Fetching ticket details")
         incident = IncidentService.get_incident_by_number(incident_number)
 
         if incident is None:
             logger.info("Validation failed")
-            return Agent1Response(success=False, message="Incident not found.")
+            return Agent1Response(success=False, message="Ticket not found.")
 
         logger.info("Checking mandatory fields")
         missing_fields = self._get_missing_fields(incident)
@@ -49,20 +49,20 @@ class Agent1DataIntegrityChecker:
             return Agent1Response(
                 success=False,
                 message=(
-                    "THE INCIDENT has insufficient data to proceed further. "
+                    "THE TICKET has insufficient data to proceed further. "
                     "Required fields are missing."
                 ),
                 missing_fields=missing_fields,
             )
 
-        logger.info("Checking incident state")
+        logger.info("Checking ticket state")
         if incident.state == IncidentState.RESOLVED:
-            logger.info("Incident is already resolved — stopping workflow at Agent 1")
+            logger.info("Ticket is already resolved — stopping workflow at Agent 1")
             return Agent1Response(
                 success=False,
                 incident_resolved=True,
                 message=(
-                    f"Incident {incident_number} is already in RESOLVED state. "
+                    f"Ticket {incident_number} is already in RESOLVED state. "
                     "No further processing is required."
                 ),
                 incident=incident,
@@ -71,7 +71,7 @@ class Agent1DataIntegrityChecker:
         logger.info("Validation passed")
         return Agent1Response(
             success=True,
-            message="Incident data validated successfully.",
+            message="Ticket data validated successfully.",
             incident=incident,
         )
 

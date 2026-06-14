@@ -11,7 +11,7 @@ class Agent5RecommendationRequest(BaseModel):
     """
     Standalone request to run Agent 5 directly.
     Provide an agent3_results payload (as returned by Agent 3) and
-    optionally the original incident details.
+    optionally the original ticket details.
     """
 
     agent3_results: dict = Field(
@@ -19,18 +19,18 @@ class Agent5RecommendationRequest(BaseModel):
     )
     original_incident: dict = Field(
         default_factory=dict,
-        description="Original incident details from Agent 1 (optional but recommended).",
+        description="Original ticket details from Agent 1 (optional but recommended).",
     )
 
 
 @router.post(
     "/recommend",
     response_model=Agent5Response,
-    summary="Generate resolution recommendation from similar incidents",
+    summary="Generate resolution recommendation from similar tickets",
     description=(
         "Run Agent 5 standalone. Accepts an Agent 3 result payload and "
         "returns a structured resolution recommendation built from resolved "
-        "historical incidents and their datafixes."
+        "historical tickets and their datafixes."
     ),
 )
 def recommend_resolution(request: Agent5RecommendationRequest) -> Agent5Response:

@@ -10,7 +10,7 @@ router = APIRouter(prefix="/api/agents/agent4", tags=["Agent 4"])
 @router.post(
     "/capture",
     response_model=Agent4Response,
-    summary="Capture a new incident resolution",
+    summary="Capture a new ticket resolution",
     description=(
         "Run Agent 4 to capture user-provided resolution notes, ingest the "
         "resulting knowledge record through the ingestion service, update the "
@@ -24,12 +24,12 @@ def capture_resolution(request: Agent4ResolutionCaptureRequest) -> Agent4Respons
     if incident is None:
         return Agent4Response(
             success=False,
-            message="Incident not found.",
+            message="Ticket not found.",
             saved=False,
             saved_incident_number=None,
             ingested_to_qdrant=False,
             datafix_saved=False,
-            error="Incident not found.",
+            error="Ticket not found.",
         )
 
     agent = Agent4ResolutionCapture()

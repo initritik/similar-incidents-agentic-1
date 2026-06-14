@@ -73,7 +73,7 @@ class Agent4ResolutionCapture:
 
             # ── Step 2: Resolve incident in mock data store ──────────────────
             logger.info(
-                "Updating incident %s state to RESOLVED in mock data store.",
+                "Updating ticket %s state to RESOLVED in mock data store.",
                 incident.incident_number,
             )
             updated_incident = IncidentService.resolve_incident(
@@ -82,12 +82,12 @@ class Agent4ResolutionCapture:
             )
             if updated_incident is None:
                 logger.warning(
-                    "Incident %s not found in mock data — state not updated.",
+                    "Ticket %s not found in mock data — state not updated.",
                     incident.incident_number,
                 )
             else:
                 logger.info(
-                    "Incident %s successfully transitioned to RESOLVED.",
+                    "Ticket %s successfully transitioned to RESOLVED.",
                     incident.incident_number,
                 )
 
@@ -113,7 +113,7 @@ class Agent4ResolutionCapture:
             logger.info("Agent4 completed")
             return Agent4Response(
                 success=True,
-                message="Resolution captured and saved successfully. Incident marked as RESOLVED.",
+                message="Resolution captured and saved successfully. Ticket marked as RESOLVED.",
                 saved=True,
                 saved_incident_number=incident.incident_number,
                 ingested_to_qdrant=True,

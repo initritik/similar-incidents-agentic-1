@@ -6,7 +6,7 @@ from app.models.enums import IncidentState
 
 
 class Incident(BaseModel):
-    incident_number: str = Field(examples=["INC000001"])
+    incident_number: str = Field(examples=["INC000001", "SCTASK005"])
     short_description: str
     description: str
     state: IncidentState

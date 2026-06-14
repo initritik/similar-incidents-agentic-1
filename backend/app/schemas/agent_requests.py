@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 
 
 class Agent1ValidationRequest(BaseModel):
-    incident_number: str = Field(examples=["INC000001"])
+    incident_number: str = Field(examples=["INC000001", "SCTASK005"])
 
 
 class Agent4ResolutionCaptureRequest(BaseModel):

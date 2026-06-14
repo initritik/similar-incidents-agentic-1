@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class IngestionService:
-    """Service for ingesting resolved incidents and datafixes into Qdrant with OpenAI embeddings."""
+    """Service for ingesting resolved tickets and datafixes into Qdrant with OpenAI embeddings."""
 
     def __init__(self):
         self.qdrant_service = QdrantService()
@@ -24,11 +24,11 @@ class IngestionService:
 
     def ingest_mock_data(self) -> IngestionSummary:
         """
-        Main ingestion method: Load resolved incidents, create embeddings, and upsert to Qdrant.
+        Main ingestion method: Load resolved tickets, create embeddings, and upsert to Qdrant.
 
         Process:
-        1. Load resolved incidents from mock data
-        2. Match each incident with its datafix
+        1. Load resolved tickets from mock data
+        2. Match each ticket         with its datafix
         3. For each record: generate OpenAI embedding from short_description + description
         4. Create PointStruct with embedding vector and payload (incident + datafix data)
         5. Upsert batches to Qdrant
@@ -46,9 +46,9 @@ class IngestionService:
         logger.info(f"Batch size: {self.batch_size}")
 
         try:
-            # Collect resolved incidents with their datafixes
+            # Collect resolved tickets with their datafixes
             records = self._collect_ingestion_records()
-            logger.info(f"Collected {len(records)} resolved incidents with datafixes")
+            logger.info(f"Collected {len(records)} resolved tickets with datafixes")
 
             # Track statistics
             total_resolved = len(records)
@@ -73,7 +73,7 @@ class IngestionService:
 
             logger.info("=" * 80)
             logger.info("INGESTION COMPLETED")
-            logger.info(f"  Total resolved incidents: {total_resolved}")
+            logger.info(f"  Total resolved tickets: {total_resolved}")
             logger.info(f"  With datafixes: {with_datafix}")
             logger.info(f"  Without datafixes: {without_datafix}")
             logger.info(f"  Successfully ingested: {total_resolved - failed_count}")
@@ -224,7 +224,7 @@ class IngestionService:
 
         For each record:
         1. Generate embedding from short_description + description
-        2. Create payload with all incident and datafix data
+        2. Create payload with all ticket and datafix data
         3. Create PointStruct with unique ID
         4. Upsert to Qdrant
 

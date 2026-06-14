@@ -16,7 +16,7 @@ class IngestionRunner:
 
         Steps:
         1. Initialize Qdrant collection
-        2. Ingest resolved incidents and datafixes with OpenAI embeddings
+        2. Ingest resolved tickets and datafixes with OpenAI embeddings
         3. Print summary
         """
         logger.info("=" * 80)
@@ -37,7 +37,7 @@ class IngestionRunner:
             # Step 3: Summary already printed in ingest_mock_data
             logger.info("\n[Step 3] INGESTION SUMMARY")
             logger.info("-" * 80)
-            logger.info(f"Total resolved incidents: {summary.total_resolved_incidents}")
+            logger.info(f"Total resolved tickets: {summary.total_resolved_incidents}")
             logger.info(f"  With datafixes: {summary.incidents_with_datafixes}")
             logger.info(f"  Without datafixes: {summary.incidents_without_datafixes}")
             logger.info(f"Successfully ingested: {summary.total_incidents_ingested}")

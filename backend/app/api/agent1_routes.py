@@ -15,16 +15,16 @@ router = APIRouter(prefix="/api/agents/agent1", tags=["Agent 1"])
     "/validate",
     response_model=Agent1Response,
     status_code=status.HTTP_200_OK,
-    summary="Validate incident data integrity",
+    summary="Validate ticket data integrity",
     description=(
-        "Run Agent 1 data integrity checks against a mock incident record. "
-        "This endpoint validates the incident number, retrieves the incident, "
+        "Run Agent 1 data integrity checks against a mock ticket record. "
+        "This endpoint validates the ticket number, retrieves the ticket, "
         "and checks mandatory fields only."
     ),
     responses={
         status.HTTP_400_BAD_REQUEST: {
             "model": Agent1Response,
-            "description": "Invalid incident identifier format.",
+            "description": "Invalid ticket identifier format.",
         },
     },
 )
@@ -38,12 +38,12 @@ def validate_incident(request: Agent1ValidationRequest) -> Agent1Response:
     Returns:
         Agent1Response with success status and incident details if valid.
     """
-    # Pre-validate incident number format
+    # Pre-validate ticket number format
     if not is_valid_incident_number(request.incident_number):
-        logger.warning(f"Invalid incident number format: {request.incident_number}")
+        logger.warning(f"Invalid ticket number format: {request.incident_number}")
         return Agent1Response(
             success=False,
-            message="Invalid incident identifier format. Expected format: INC followed by 6 digits (e.g., INC000001).",
+            message="Invalid ticket identifier format. Expected format: INC000001 or SCTASK005.",
         )
 
     try:

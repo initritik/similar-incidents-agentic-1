@@ -32,7 +32,7 @@ class Agent3SimilarIncidentAnalyzer:
             logger.info("Agent3 started")
 
             if not agent2_results.get("success", False):
-                logger.info("No similar incidents found (Agent 2 unsuccessful)")
+                logger.info("No similar tickets found (Agent 2 unsuccessful)")
                 return self._build_no_match_response()
 
             similar_incidents = agent2_results.get("similar_incidents", [])
@@ -46,7 +46,7 @@ class Agent3SimilarIncidentAnalyzer:
 
             if not filtered_matches:
                 logger.info(
-                    "No incidents met the %.0f%% threshold — treating as new incident",
+                    "No tickets met the %.0f%% threshold — treating as new ticket",
                     self.SIMILARITY_THRESHOLD * 100,
                 )
                 return self._build_no_match_response()
@@ -61,13 +61,13 @@ class Agent3SimilarIncidentAnalyzer:
             top_matches = sorted_matches[: self.MAX_TOP_MATCHES]
 
             logger.info(
-                "Agent3 completed — %d similar incident(s) above threshold",
+                "Agent3 completed — %d similar ticket(s) above threshold",
                 len(top_matches),
             )
             return Agent3Response(
                 success=True,
                 similar_incidents_found=True,
-                message=f"Found {len(top_matches)} similar incident(s) with similarity ≥ {int(self.SIMILARITY_THRESHOLD * 100)}%.",
+                message=f"Found {len(top_matches)} similar ticket(s) with similarity ≥ {int(self.SIMILARITY_THRESHOLD * 100)}%.",
                 match_count=len(top_matches),
                 top_matches=[
                     self._build_similar_incident_detail(match) for match in top_matches
@@ -79,7 +79,7 @@ class Agent3SimilarIncidentAnalyzer:
             return Agent3Response(
                 success=False,
                 similar_incidents_found=False,
-                message=f"Failed to analyze similar incidents: {str(exc)}",
+                message=f"Failed to analyze similar tickets: {str(exc)}",
                 match_count=0,
                 top_matches=[],
             )
@@ -114,11 +114,11 @@ class Agent3SimilarIncidentAnalyzer:
 
     @staticmethod
     def _build_no_match_response() -> Agent3Response:
-        logger.info("Agent3 completed — no similar incidents above threshold")
+        logger.info("Agent3 completed — no similar tickets above threshold")
         return Agent3Response(
             success=True,
             similar_incidents_found=False,
-            message="No similar incidents found above the 50% threshold. This appears to be a new incident type.",
+            message="No similar tickets found above the 50% threshold. This appears to be a new ticket type."
             match_count=0,
             top_matches=[],
         )

@@ -16,7 +16,7 @@ router = APIRouter(prefix="/api/agents/agent2", tags=["Agent 2"])
     "/search",
     response_model=Agent2Response,
     status_code=status.HTTP_200_OK,
-    summary="Search for similar incidents",
+    summary="Search for similar tickets",
     description=(
         "Run Agent 2 to search for incidents semantically similar to the provided incident. "
         "This endpoint generates embeddings using OpenAI and searches the Qdrant vector database "
@@ -25,7 +25,7 @@ router = APIRouter(prefix="/api/agents/agent2", tags=["Agent 2"])
     responses={
         status.HTTP_400_BAD_REQUEST: {
             "model": Agent2Response,
-            "description": "Invalid incident identifier format.",
+            "description": "Invalid ticket identifier format.",
         },
     },
 )
@@ -41,10 +41,10 @@ def search_similar_incidents(request: Agent1ValidationRequest) -> Agent2Response
     """
     # Validate incident number format
     if not is_valid_incident_number(request.incident_number):
-        logger.warning(f"Invalid incident number format: {request.incident_number}")
+        logger.warning(f"Invalid ticket number format: {request.incident_number}")
         return Agent2Response(
             success=False,
-            message="Invalid incident identifier format.",
+            message="Invalid ticket identifier format.",
             match_count=0,
             similar_incidents=[],
         )
@@ -54,10 +54,10 @@ def search_similar_incidents(request: Agent1ValidationRequest) -> Agent2Response
         incident = IncidentService.get_incident_by_number(request.incident_number)
 
         if incident is None:
-            logger.info(f"Incident not found: {request.incident_number}")
+            logger.info(f"Ticket not found: {request.incident_number}")
             return Agent2Response(
                 success=False,
-                message=f"Incident {request.incident_number} not found.",
+                message=f"Ticket {request.incident_number} not found.",
                 match_count=0,
                 similar_incidents=[],
             )

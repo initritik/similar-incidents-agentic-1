@@ -32,7 +32,7 @@ class Agent2SimilaritySearch:
         """
         try:
             logger.info(f"Agent 2 started")
-            logger.info(f"Searching for incidents similar to {incident.incident_number}")
+            logger.info(f"Searching for tickets similar to {incident.incident_number}")
 
             # Search for similar incidents
             results = self.vector_search_service.search_similar_incidents(
@@ -42,20 +42,20 @@ class Agent2SimilaritySearch:
             )
 
             if not results:
-                logger.info("No similar incidents found")
+                logger.info("No similar tickets found")
                 return Agent2Response(
                     success=True,
-                    message="No similar incidents found.",
+                    message="No similar tickets found.",
                     match_count=0,
                     similar_incidents=[],
                 )
 
-            logger.info(f"Found {len(results)} similar incidents")
+            logger.info(f"Found {len(results)} similar tickets")
 
             # Build response with results
             return Agent2Response(
                 success=True,
-                message=f"Found {len(results)} similar incident(s).",
+                message=f"Found {len(results)} similar ticket(s).",
                 match_count=len(results),
                 similar_incidents=results,
             )
@@ -64,7 +64,7 @@ class Agent2SimilaritySearch:
             logger.error(f"Agent 2 failed: {str(e)}")
             return Agent2Response(
                 success=False,
-                message=f"Failed to search for similar incidents: {str(e)}",
+                message=f"Failed to search for similar tickets: {str(e)}",
                 match_count=0,
                 similar_incidents=[],
             )
