@@ -28,12 +28,33 @@ export function Agent1Panel({ agentStatus, result }: Agent1PanelProps) {
     );
   }
 
+// 1. Handle the case where result is null/undefined
   if (!result) {
     return (
-      <EmptyState title="No result available" description="Agent 1 has not produced output yet." />
+      <EmptyState 
+        title="No result available" 
+        description="Agent 1 has not produced output yet." 
+      />
     );
   }
 
+  // 2. Safely check for the resolved state now that we know result exists
+  if (result.incident_resolved) {
+    return (
+      <div className="space-y-5">
+        <div className="rounded-md border border-amber-200 bg-amber-50 px-4 py-3 dark:border-amber-800 dark:bg-amber-900/20">
+          <p className="text-sm font-medium text-amber-700 dark:text-amber-400">
+            Incident already resolved
+          </p>
+          <p className="mt-1 text-xs text-amber-600 dark:text-amber-500">
+            {result.message}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // 3. Destructure safely
   const { incident, missing_fields } = result;
 
   return (

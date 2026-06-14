@@ -44,6 +44,7 @@ export interface Agent1Response {
   message: string;
   incident: Incident | null;
   missing_fields: string[];
+  incident_resolved?: boolean;
 }
 
 export interface Agent2Response {

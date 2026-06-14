@@ -9,6 +9,7 @@ class Agent1Response(BaseModel):
     message: str
     incident: Incident | None = None
     missing_fields: list[str] = []
+    incident_resolved: bool = False
 
 
 class Agent2Response(BaseModel):
