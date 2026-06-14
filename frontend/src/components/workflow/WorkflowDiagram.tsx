@@ -240,23 +240,24 @@ function ZigZagConnector({
   const c = STATUS_COLORS[status];
   // Alternate zig direction: even = down-then-up, odd = up-then-down
   const isZigDown = index % 2 === 0;
-  const W = 56; // total connector width
-  const H = 28; // amplitude of the zig
+  const W = 180; // total connector width — wide enough to visually touch both bots
+  const H = 32; // amplitude of the zig
   const midY = H / 2;
-  const amplitude = isZigDown ? 12 : -12;
+  const amplitude = isZigDown ? 11 : -11;
 
-  // Path: start center-left, arc to mid with offset, arc back center-right
-  const d = `M 0 ${midY} C ${W * 0.3} ${midY} ${W * 0.3} ${midY + amplitude} ${W * 0.5} ${midY + amplitude} S ${W * 0.7} ${midY} ${W} ${midY}`;
+  // Path starts at x=-4 and ends at x=W+4 so it overlaps slightly into each bot,
+  // ensuring there's no visible gap between the line end and the bot edge.
+  const d = `M -4 ${midY} C ${W * 0.28} ${midY} ${W * 0.28} ${midY + amplitude} ${W * 0.5} ${midY + amplitude} S ${W * 0.72} ${midY} ${W + 4} ${midY}`;
 
   const isActive = status === "RUNNING" || status === "COMPLETED";
 
   return (
     <div
       className="relative shrink-0 flex items-center justify-center"
-      style={{ width: W, height: H }}
+      style={{ width: W, height: H, overflow: "visible" }}
       aria-hidden
     >
-      <svg viewBox={`0 0 ${W} ${H}`} width={W} height={H} className="overflow-visible">
+      <svg viewBox={`0 0 ${W} ${H}`} width={W} height={H} style={{ overflow: "visible" }}>
         <defs>
           <linearGradient id={`conn-grad-${index}`} x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%"   stopColor={c.eyeFill} stopOpacity="0.25" />
@@ -359,7 +360,7 @@ export function WorkflowDiagram({ agentStatuses, className }: WorkflowDiagramPro
 
       {/* Bot row */}
       <div
-        className="flex items-center justify-between px-4 py-6 overflow-x-auto"
+        className="flex items-center justify-between px-6 py-6 overflow-x-auto"
         style={{ minWidth: 0 }}
       >
         {AGENTS.map((agent, idx) => {
