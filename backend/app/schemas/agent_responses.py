@@ -8,7 +8,12 @@ class Agent1Response(BaseModel):
     success: bool
     message: str
     incident: Incident | None = None
-    missing_fields: list[str] = []
+    missing_fields: list[str] = Field(default_factory=list)
+    # NEW: Critical for already-resolved incidents
+    incident_resolved: bool = Field(
+        default=False,
+        description="True if the incident is already in RESOLVED state (Agent1 early exit)"
+    )
 
 
 class Agent2Response(BaseModel):
@@ -22,8 +27,6 @@ class Agent2Response(BaseModel):
 
 
 class SimilarIncidentDetail(BaseModel):
-    """Detailed information about a similar incident with datafix."""
-
     incident_number: str
     short_description: str
     description: str
@@ -38,8 +41,6 @@ class SimilarIncidentDetail(BaseModel):
 
 
 class Agent3Response(BaseModel):
-    """Agent 3 similar incident analyzer response."""
-
     success: bool
     similar_incidents_found: bool
     message: str
@@ -57,7 +58,6 @@ class Agent4Response(BaseModel):
     saved_incident_number: str | None = None
     ingested_to_qdrant: bool
     datafix_saved: bool
-    # New: reflects whether the incident state was updated to RESOLVED
     incident_state_updated: bool = Field(
         default=False,
         description="True when the incident was successfully transitioned to RESOLVED state.",
@@ -66,8 +66,6 @@ class Agent4Response(BaseModel):
 
 
 class Agent5Response(BaseModel):
-    """Agent 5 resolution recommendation response."""
-
     success: bool
     message: str
     recommended_resolution: str
