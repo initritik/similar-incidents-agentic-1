@@ -594,10 +594,10 @@ MOCK_INCIDENTS: list[Incident] = [
             "Remote employees are unable to establish VPN sessions. Authentication "
             "succeeds but the tunnel disconnects immediately after connection."
         ),
-        state=IncidentState.OPEN,
-        resolution_notes=None,
+        state=IncidentState.RESOLVED,
+        resolution_notes='This a 2ND DEMO',
         created_date=datetime(2026, 6, 2, 9, 15),
-        updated_date=datetime(2026, 6, 2, 9, 15),
+        updated_date=datetime(2026, 6, 14, 14, 48, 42),
         assignment_group="Network Operations",
         assigned_to="Rohit Mehta",
     ),

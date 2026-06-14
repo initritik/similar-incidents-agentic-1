@@ -4,6 +4,7 @@ from datetime import UTC, datetime
 from app.mock_data.incidents import MOCK_INCIDENTS
 from app.models import Incident
 from app.models.enums import IncidentState
+from app.services.mock_data_persistence import persist_incident_to_mock_source
 
 logger = logging.getLogger(__name__)
 
@@ -29,8 +30,9 @@ class IncidentService:
         Mark an incident as RESOLVED and set its resolution notes.
 
         Mutates the in-memory MOCK_INCIDENTS list in-place so that subsequent
-        vector-search results reflect the resolved state.  In a production system
-        this would issue a PATCH/PUT to the ServiceNow API.
+        vector-search results reflect the resolved state. In addition, the
+        corresponding entry in backend/app/mock_data/incidents.py is updated so
+        the mock source file stays in sync across restarts.
 
         Returns the updated Incident, or None if not found.
         """
@@ -50,6 +52,12 @@ class IncidentService:
                     }
                 )
                 MOCK_INCIDENTS[idx] = updated
+
+                persist_incident_to_mock_source(
+                    incident=updated,
+                    resolution_notes=resolution_notes,
+                )
+
                 logger.info(
                     "Incident %s state updated to RESOLVED.", incident_number
                 )
