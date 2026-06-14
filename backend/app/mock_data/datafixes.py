@@ -185,70 +185,70 @@ MOCK_DATAFIXES: list[Datafix] = [
             "WHERE USER_ID='CUS44029';"
         ),
     ),
-    Datafix(
-        datafix_id="DFX000071",
-        incident_number="SCTASK071",
-        description="Update order status and restart fulfillment workflow.",
-        datafix_code=(
-            "UPDATE CUSTOMER_ORDER\n"
-            "SET ORDER_STATUS='READY_FOR_FULFILLMENT'\n"
-            "WHERE ORDER_ID='ORD50121';"
-        ),
-    ),
+    # Datafix(
+    #     datafix_id="DFX000071",
+    #     incident_number="SCTASK071",
+    #     description="Update order status and restart fulfillment workflow.",
+    #     datafix_code=(
+    #         "UPDATE CUSTOMER_ORDER\n"
+    #         "SET ORDER_STATUS='READY_FOR_FULFILLMENT'\n"
+    #         "WHERE ORDER_ID='ORD50121';"
+    #     ),
+    # ),
 
-    Datafix(
-        datafix_id="DFX000072",
-        incident_number="SCTASK072",
-        description="Correct order status after payment synchronization failure.",
-        datafix_code=(
-            "UPDATE CUSTOMER_ORDER\n"
-            "SET ORDER_STATUS='READY_FOR_FULFILLMENT'\n"
-            "WHERE ORDER_ID='ORD50134';"
-        ),
-    ),
+    # Datafix(
+    #     datafix_id="DFX000072",
+    #     incident_number="SCTASK072",
+    #     description="Correct order status after payment synchronization failure.",
+    #     datafix_code=(
+    #         "UPDATE CUSTOMER_ORDER\n"
+    #         "SET ORDER_STATUS='READY_FOR_FULFILLMENT'\n"
+    #         "WHERE ORDER_ID='ORD50134';"
+    #     ),
+    # ),
 
-    Datafix(
-        datafix_id="DFX000073",
-        incident_number="SCTASK073",
-        description="Recover order workflow after synchronization failure.",
-        datafix_code=(
-            "UPDATE CUSTOMER_ORDER\n"
-            "SET ORDER_STATUS='READY_FOR_FULFILLMENT'\n"
-            "WHERE ORDER_ID='ORD50148';"
-        ),
-    ),
+    # Datafix(
+    #     datafix_id="DFX000073",
+    #     incident_number="SCTASK073",
+    #     description="Recover order workflow after synchronization failure.",
+    #     datafix_code=(
+    #         "UPDATE CUSTOMER_ORDER\n"
+    #         "SET ORDER_STATUS='READY_FOR_FULFILLMENT'\n"
+    #         "WHERE ORDER_ID='ORD50148';"
+    #     ),
+    # ),
 
-    Datafix(
-        datafix_id="DFX000076",
-        incident_number="SCTASK076",
-        description="Activate employee badge after onboarding synchronization issue.",
-        datafix_code=(
-            "UPDATE EMPLOYEE_BADGE\n"
-            "SET ACCESS_STATUS='ACTIVE'\n"
-            "WHERE BADGE_ID='BDG89011';"
-        ),
-    ),
+    # Datafix(
+    #     datafix_id="DFX000076",
+    #     incident_number="SCTASK076",
+    #     description="Activate employee badge after onboarding synchronization issue.",
+    #     datafix_code=(
+    #         "UPDATE EMPLOYEE_BADGE\n"
+    #         "SET ACCESS_STATUS='ACTIVE'\n"
+    #         "WHERE BADGE_ID='BDG89011';"
+    #     ),
+    # ),
 
-    Datafix(
-        datafix_id="DFX000077",
-        incident_number="SCTASK077",
-        description="Activate building access card pending onboarding completion.",
-        datafix_code=(
-            "UPDATE EMPLOYEE_BADGE\n"
-            "SET ACCESS_STATUS='ACTIVE'\n"
-            "WHERE BADGE_ID='BDG89025';"
-        ),
-    ),
+    # Datafix(
+    #     datafix_id="DFX000077",
+    #     incident_number="SCTASK077",
+    #     description="Activate building access card pending onboarding completion.",
+    #     datafix_code=(
+    #         "UPDATE EMPLOYEE_BADGE\n"
+    #         "SET ACCESS_STATUS='ACTIVE'\n"
+    #         "WHERE BADGE_ID='BDG89025';"
+    #     ),
+    # ),
 
-    Datafix(
-        datafix_id="DFX000078",
-        incident_number="SCTASK078",
-        description="Synchronize employee badge entitlements.",
-        datafix_code=(
-            "UPDATE EMPLOYEE_BADGE\n"
-            "SET ACCESS_STATUS='ACTIVE'\n"
-            "WHERE BADGE_ID='BDG89039';"
-        ),
-    ),
+    # Datafix(
+    #     datafix_id="DFX000078",
+    #     incident_number="SCTASK078",
+    #     description="Synchronize employee badge entitlements.",
+    #     datafix_code=(
+    #         "UPDATE EMPLOYEE_BADGE\n"
+    #         "SET ACCESS_STATUS='ACTIVE'\n"
+    #         "WHERE BADGE_ID='BDG89039';"
+    #     ),
+    # ),
 ]
 

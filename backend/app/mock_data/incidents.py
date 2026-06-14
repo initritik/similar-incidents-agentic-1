@@ -757,183 +757,183 @@ MOCK_INCIDENTS: list[Incident] = [
         assigned_to="Manoj Kumar",
     ),
 
-    # ==========================================
-    # GROUP 1 - Order Status Synchronization Issue
-    # ==========================================
+    # # ==========================================
+    # # GROUP 1 - Order Status Synchronization Issue
+    # # ==========================================
 
-    Incident(
-        incident_number="SCTASK071",
-        short_description="Order remains in processing after payment confirmation",
-        description=(
-            "Customer order ORD50121 shows successful payment in the payment "
-            "system, but the order status remains PROCESSING. The fulfillment "
-            "workflow was not triggered automatically."
-        ),
-        state=IncidentState.RESOLVED,
-        resolution_notes=(
-            "Updated the order status to READY_FOR_FULFILLMENT and replayed the "
-            "order synchronization process. Fulfillment workflow started successfully."
-        ),
-        created_date=datetime(2026, 5, 21, 9, 15),
-        updated_date=datetime(2026, 5, 21, 11, 20),
-        assignment_group="Order Processing Support",
-        assigned_to="Aarav Singh",
-    ),
+    # Incident(
+    #     incident_number="SCTASK071",
+    #     short_description="Order remains in processing after payment confirmation",
+    #     description=(
+    #         "Customer order ORD50121 shows successful payment in the payment "
+    #         "system, but the order status remains PROCESSING. The fulfillment "
+    #         "workflow was not triggered automatically."
+    #     ),
+    #     state=IncidentState.RESOLVED,
+    #     resolution_notes=(
+    #         "Updated the order status to READY_FOR_FULFILLMENT and replayed the "
+    #         "order synchronization process. Fulfillment workflow started successfully."
+    #     ),
+    #     created_date=datetime(2026, 5, 21, 9, 15),
+    #     updated_date=datetime(2026, 5, 21, 11, 20),
+    #     assignment_group="Order Processing Support",
+    #     assigned_to="Aarav Singh",
+    # ),
 
-    Incident(
-        incident_number="SCTASK072",
-        short_description="Paid order not progressing to fulfillment stage",
-        description=(
-            "Order ORD50134 was successfully charged, but the order management "
-            "system still displays the transaction in processing status. The "
-            "fulfillment event was never generated."
-        ),
-        state=IncidentState.RESOLVED,
-        resolution_notes=(
-            "Corrected the order status and re-triggered the fulfillment event. "
-            "Order moved successfully to fulfillment."
-        ),
-        created_date=datetime(2026, 5, 22, 10, 5),
-        updated_date=datetime(2026, 5, 22, 12, 12),
-        assignment_group="Order Processing Support",
-        assigned_to="Neha Verma",
-    ),
+    # Incident(
+    #     incident_number="SCTASK072",
+    #     short_description="Paid order not progressing to fulfillment stage",
+    #     description=(
+    #         "Order ORD50134 was successfully charged, but the order management "
+    #         "system still displays the transaction in processing status. The "
+    #         "fulfillment event was never generated."
+    #     ),
+    #     state=IncidentState.RESOLVED,
+    #     resolution_notes=(
+    #         "Corrected the order status and re-triggered the fulfillment event. "
+    #         "Order moved successfully to fulfillment."
+    #     ),
+    #     created_date=datetime(2026, 5, 22, 10, 5),
+    #     updated_date=datetime(2026, 5, 22, 12, 12),
+    #     assignment_group="Order Processing Support",
+    #     assigned_to="Neha Verma",
+    # ),
 
-    Incident(
-        incident_number="SCTASK073",
-        short_description="Order workflow stalled after successful payment",
-        description=(
-            "Customer reports delayed shipment for order ORD50148. Payment was "
-            "captured successfully, but status synchronization between payment "
-            "and order systems failed."
-        ),
-        state=IncidentState.RESOLVED,
-        resolution_notes=(
-            "Replayed the synchronization job and updated the order status. "
-            "Shipment generation resumed normally."
-        ),
-        created_date=datetime(2026, 5, 23, 8, 40),
-        updated_date=datetime(2026, 5, 23, 10, 25),
-        assignment_group="Order Processing Support",
-        assigned_to="Rahul Nair",
-    ),
+    # Incident(
+    #     incident_number="SCTASK073",
+    #     short_description="Order workflow stalled after successful payment",
+    #     description=(
+    #         "Customer reports delayed shipment for order ORD50148. Payment was "
+    #         "captured successfully, but status synchronization between payment "
+    #         "and order systems failed."
+    #     ),
+    #     state=IncidentState.RESOLVED,
+    #     resolution_notes=(
+    #         "Replayed the synchronization job and updated the order status. "
+    #         "Shipment generation resumed normally."
+    #     ),
+    #     created_date=datetime(2026, 5, 23, 8, 40),
+    #     updated_date=datetime(2026, 5, 23, 10, 25),
+    #     assignment_group="Order Processing Support",
+    #     assigned_to="Rahul Nair",
+    # ),
 
-    Incident(
-        incident_number="SCTASK074",
-        short_description="Order processing status under investigation",
-        description=(
-            "Order ORD50163 has completed payment validation, but the order "
-            "continues to remain in processing state. Investigation is underway "
-            "to determine why fulfillment was not initiated."
-        ),
-        state=IncidentState.WORK_IN_PROGRESS,
-        resolution_notes=None,
-        created_date=datetime(2026, 5, 24, 13, 5),
-        updated_date=datetime(2026, 5, 24, 14, 10),
-        assignment_group="Order Processing Support",
-        assigned_to="Priya Kulkarni",
-    ),
+    # Incident(
+    #     incident_number="SCTASK074",
+    #     short_description="Order processing status under investigation",
+    #     description=(
+    #         "Order ORD50163 has completed payment validation, but the order "
+    #         "continues to remain in processing state. Investigation is underway "
+    #         "to determine why fulfillment was not initiated."
+    #     ),
+    #     state=IncidentState.WORK_IN_PROGRESS,
+    #     resolution_notes=None,
+    #     created_date=datetime(2026, 5, 24, 13, 5),
+    #     updated_date=datetime(2026, 5, 24, 14, 10),
+    #     assignment_group="Order Processing Support",
+    #     assigned_to="Priya Kulkarni",
+    # ),
 
-    Incident(
-        incident_number="SCTASK075",
-        short_description="Customer order stuck in processing queue",
-        description=(
-            "Order ORD50179 is visible in the processing queue despite successful "
-            "payment completion. The order has not advanced to the next stage of "
-            "the fulfillment workflow."
-        ),
-        state=IncidentState.OPEN,
-        resolution_notes=None,
-        created_date=datetime(2026, 5, 25, 9, 30),
-        updated_date=datetime(2026, 5, 25, 9, 30),
-        assignment_group="Order Processing Support",
-        assigned_to="Siddharth Rao",
-    ),
+    # Incident(
+    #     incident_number="SCTASK075",
+    #     short_description="Customer order stuck in processing queue",
+    #     description=(
+    #         "Order ORD50179 is visible in the processing queue despite successful "
+    #         "payment completion. The order has not advanced to the next stage of "
+    #         "the fulfillment workflow."
+    #     ),
+    #     state=IncidentState.OPEN,
+    #     resolution_notes=None,
+    #     created_date=datetime(2026, 5, 25, 9, 30),
+    #     updated_date=datetime(2026, 5, 25, 9, 30),
+    #     assignment_group="Order Processing Support",
+    #     assigned_to="Siddharth Rao",
+    # ),
 
-    # ==========================================
-    # GROUP 2 - Employee Badge Access Sync Issue
-    # ==========================================
+    # # ==========================================
+    # # GROUP 2 - Employee Badge Access Sync Issue
+    # # ==========================================
 
-    Incident(
-        incident_number="SCTASK076",
-        short_description="Employee badge remains inactive after approval",
-        description=(
-            "Employee badge BDG89011 was approved during onboarding, but the "
-            "physical access system still shows the badge as inactive."
-        ),
-        state=IncidentState.RESOLVED,
-        resolution_notes=(
-            "Activated the badge record and reprocessed the access synchronization "
-            "job. Employee successfully accessed the facility."
-        ),
-        created_date=datetime(2026, 5, 26, 9, 20),
-        updated_date=datetime(2026, 5, 26, 11, 5),
-        assignment_group="Physical Access Management",
-        assigned_to="Kavya Menon",
-    ),
+    # Incident(
+    #     incident_number="SCTASK076",
+    #     short_description="Employee badge remains inactive after approval",
+    #     description=(
+    #         "Employee badge BDG89011 was approved during onboarding, but the "
+    #         "physical access system still shows the badge as inactive."
+    #     ),
+    #     state=IncidentState.RESOLVED,
+    #     resolution_notes=(
+    #         "Activated the badge record and reprocessed the access synchronization "
+    #         "job. Employee successfully accessed the facility."
+    #     ),
+    #     created_date=datetime(2026, 5, 26, 9, 20),
+    #     updated_date=datetime(2026, 5, 26, 11, 5),
+    #     assignment_group="Physical Access Management",
+    #     assigned_to="Kavya Menon",
+    # ),
 
-    Incident(
-        incident_number="SCTASK077",
-        short_description="Building access card not activated after onboarding",
-        description=(
-            "New employee reports inability to enter authorized office areas. "
-            "Badge ID BDG89025 exists in the access management system, but the "
-            "activation workflow did not complete."
-        ),
-        state=IncidentState.RESOLVED,
-        resolution_notes=(
-            "Updated badge status to active and replayed the onboarding sync process."
-        ),
-        created_date=datetime(2026, 5, 27, 10, 10),
-        updated_date=datetime(2026, 5, 27, 12, 1),
-        assignment_group="Physical Access Management",
-        assigned_to="Imran Khan",
-    ),
+    # Incident(
+    #     incident_number="SCTASK077",
+    #     short_description="Building access card not activated after onboarding",
+    #     description=(
+    #         "New employee reports inability to enter authorized office areas. "
+    #         "Badge ID BDG89025 exists in the access management system, but the "
+    #         "activation workflow did not complete."
+    #     ),
+    #     state=IncidentState.RESOLVED,
+    #     resolution_notes=(
+    #         "Updated badge status to active and replayed the onboarding sync process."
+    #     ),
+    #     created_date=datetime(2026, 5, 27, 10, 10),
+    #     updated_date=datetime(2026, 5, 27, 12, 1),
+    #     assignment_group="Physical Access Management",
+    #     assigned_to="Imran Khan",
+    # ),
 
-    Incident(
-        incident_number="SCTASK078",
-        short_description="Badge entitlement synchronization failure",
-        description=(
-            "Employee badge BDG89039 is assigned to the user, but access rights "
-            "were not synchronized to the door access control platform."
-        ),
-        state=IncidentState.RESOLVED,
-        resolution_notes=(
-            "Re-synchronized badge entitlements and verified successful door access."
-        ),
-        created_date=datetime(2026, 5, 28, 8, 55),
-        updated_date=datetime(2026, 5, 28, 10, 35),
-        assignment_group="Physical Access Management",
-        assigned_to="Sana Ali",
-    ),
+    # Incident(
+    #     incident_number="SCTASK078",
+    #     short_description="Badge entitlement synchronization failure",
+    #     description=(
+    #         "Employee badge BDG89039 is assigned to the user, but access rights "
+    #         "were not synchronized to the door access control platform."
+    #     ),
+    #     state=IncidentState.RESOLVED,
+    #     resolution_notes=(
+    #         "Re-synchronized badge entitlements and verified successful door access."
+    #     ),
+    #     created_date=datetime(2026, 5, 28, 8, 55),
+    #     updated_date=datetime(2026, 5, 28, 10, 35),
+    #     assignment_group="Physical Access Management",
+    #     assigned_to="Sana Ali",
+    # ),
 
-    Incident(
-        incident_number="SCTASK079",
-        short_description="Badge activation request pending investigation",
-        description=(
-            "Badge BDG89052 was generated during onboarding, but remains inactive "
-            "in the physical access platform. Root cause analysis is ongoing."
-        ),
-        state=IncidentState.WORK_IN_PROGRESS,
-        resolution_notes=None,
-        created_date=datetime(2026, 5, 29, 13, 20),
-        updated_date=datetime(2026, 5, 29, 14, 12),
-        assignment_group="Physical Access Management",
-        assigned_to="Tushar Jain",
-    ),
+    # Incident(
+    #     incident_number="SCTASK079",
+    #     short_description="Badge activation request pending investigation",
+    #     description=(
+    #         "Badge BDG89052 was generated during onboarding, but remains inactive "
+    #         "in the physical access platform. Root cause analysis is ongoing."
+    #     ),
+    #     state=IncidentState.WORK_IN_PROGRESS,
+    #     resolution_notes=None,
+    #     created_date=datetime(2026, 5, 29, 13, 20),
+    #     updated_date=datetime(2026, 5, 29, 14, 12),
+    #     assignment_group="Physical Access Management",
+    #     assigned_to="Tushar Jain",
+    # ),
 
-    Incident(
-        incident_number="SCTASK080",
-        short_description="Employee access badge not yet activated",
-        description=(
-            "Employee cannot access assigned office zones because badge "
-            "BDG89068 remains inactive even though onboarding approval was completed."
-        ),
-        state=IncidentState.OPEN,
-        resolution_notes=None,
-        created_date=datetime(2026, 5, 30, 9, 5),
-        updated_date=datetime(2026, 5, 30, 9, 5),
-        assignment_group="Physical Access Management",
-        assigned_to="Ritika Sharma",
-    ),
+    # Incident(
+    #     incident_number="SCTASK080",
+    #     short_description="Employee access badge not yet activated",
+    #     description=(
+    #         "Employee cannot access assigned office zones because badge "
+    #         "BDG89068 remains inactive even though onboarding approval was completed."
+    #     ),
+    #     state=IncidentState.OPEN,
+    #     resolution_notes=None,
+    #     created_date=datetime(2026, 5, 30, 9, 5),
+    #     updated_date=datetime(2026, 5, 30, 9, 5),
+    #     assignment_group="Physical Access Management",
+    #     assigned_to="Ritika Sharma",
+    # ),
 ]
