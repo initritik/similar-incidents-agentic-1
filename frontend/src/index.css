@@ -161,3 +161,20 @@
   background: #0E1E3A;
   border: 1px solid rgba(201,168,76,0.15);
 }
+
+/* ── Bot diagram animations — add these into your index.css ── */
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px);  }
+  50%       { transform: translateY(-5px); }
+}
+
+@keyframes gold-pulse {
+  0%, 100% { opacity: 1;   }
+  50%       { opacity: 0.4; }
+}
+
+@keyframes flow-yellow {
+  0%   { stroke-dashoffset: 0;  }
+  100% { stroke-dashoffset: -14; }
+}
