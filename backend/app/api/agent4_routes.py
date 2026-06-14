@@ -12,8 +12,10 @@ router = APIRouter(prefix="/api/agents/agent4", tags=["Agent 4"])
     response_model=Agent4Response,
     summary="Capture a new incident resolution",
     description=(
-        "Run Agent 4 to capture user-provided resolution notes and ingest the "
-        "resulting knowledge record through the ingestion service."
+        "Run Agent 4 to capture user-provided resolution notes, ingest the "
+        "resulting knowledge record through the ingestion service, update the "
+        "incident state to RESOLVED in the mock data store, and optionally "
+        "append a datafix record."
     ),
 )
 def capture_resolution(request: Agent4ResolutionCaptureRequest) -> Agent4Response:

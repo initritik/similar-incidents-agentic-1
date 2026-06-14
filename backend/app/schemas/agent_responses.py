@@ -9,7 +9,6 @@ class Agent1Response(BaseModel):
     message: str
     incident: Incident | None = None
     missing_fields: list[str] = []
-    incident_resolved: bool = False  # True when the incident is already in RESOLVED state
 
 
 class Agent2Response(BaseModel):
@@ -58,6 +57,11 @@ class Agent4Response(BaseModel):
     saved_incident_number: str | None = None
     ingested_to_qdrant: bool
     datafix_saved: bool
+    # New: reflects whether the incident state was updated to RESOLVED
+    incident_state_updated: bool = Field(
+        default=False,
+        description="True when the incident was successfully transitioned to RESOLVED state.",
+    )
     error: str | None = None
 
 

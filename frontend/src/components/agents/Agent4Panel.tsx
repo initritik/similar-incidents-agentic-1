@@ -1,4 +1,4 @@
-import { CheckCircle2, XCircle, Database, Save, SkipForward } from "lucide-react";
+import { CheckCircle2, XCircle, Database, Save, SkipForward, ShieldCheck } from "lucide-react";
 import { StatusPill } from "@/components/ui/StatusPill";
 import { EmptyState, ErrorState } from "@/components/ui/States";
 import { ResolutionCaptureForm } from "@/components/forms/ResolutionCaptureForm";
@@ -52,21 +52,41 @@ export function Agent4Panel({
   // Check this BEFORE the SKIPPED guard — when Agent 4 is SKIPPED with an
   // "awaiting user input" message, needsResolutionCapture will be true and we
   // must show the form instead of the generic "skipped" UI.
+  //
+  // Also show the form (in its resolved-confirmation state) immediately after
+  // Agent 4 completes successfully so the user sees the RESOLVED feedback
+  // without having to switch tabs.
   if (needsResolutionCapture && incidentNumber && onCaptureSubmit) {
     return (
       <ResolutionCaptureForm
         incidentNumber={incidentNumber}
         onSubmit={onCaptureSubmit}
         isLoading={isCaptureLoading ?? false}
+        agent4Result={result}
+      />
+    );
+  }
+
+  // After a successful Agent 4 capture (re-run completed), show the resolved
+  // confirmation view even if needsResolutionCapture has been flipped back.
+  if (
+    agentStatus.status === "COMPLETED" &&
+    result?.saved === true &&
+    incidentNumber &&
+    onCaptureSubmit
+  ) {
+    return (
+      <ResolutionCaptureForm
+        incidentNumber={incidentNumber}
+        onSubmit={onCaptureSubmit}
+        isLoading={false}
+        agent4Result={result}
       />
     );
   }
 
   // ── Skipped: similar incidents found → Agent 5 handles recommendation ────
   if (agentStatus.status === "SKIPPED") {
-    // Distinguish between the two skip reasons:
-    //   1. Similar incidents found → Agent 5 generates recommendation
-    //   2. Resolution was already captured → no further action needed
     const wasResolutionCaptured =
       result?.saved === true ||
       agentStatus.message?.toLowerCase().includes("resolution captured");
@@ -123,7 +143,32 @@ export function Agent4Panel({
         />
         <CheckRow label="Ingested to Qdrant" ok={result.ingested_to_qdrant} />
         <CheckRow label="Datafix saved" ok={result.datafix_saved} />
+        <CheckRow
+          label="Incident state → RESOLVED"
+          ok={result.incident_state_updated ?? false}
+          value={
+            result.incident_state_updated
+              ? result.saved_incident_number ?? undefined
+              : undefined
+          }
+        />
       </div>
+
+      {/* RESOLVED badge */}
+      {result.incident_state_updated && (
+        <div className="flex items-center gap-3 rounded-md border border-emerald-500/25 bg-emerald-500/8 px-4 py-3">
+          <ShieldCheck className="size-4 text-emerald-400 shrink-0" aria-hidden />
+          <p className="text-xs text-emerald-300">
+            Incident{" "}
+            <span className="font-mono font-semibold">
+              {result.saved_incident_number}
+            </span>{" "}
+            has been transitioned to{" "}
+            <span className="font-semibold text-emerald-400">RESOLVED</span> in
+            the mock data store.
+          </p>
+        </div>
+      )}
 
       {result.saved_incident_number && (
         <div className="flex items-center gap-2 rounded-md border bg-muted/30 px-4 py-3">

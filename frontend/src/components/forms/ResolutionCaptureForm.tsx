@@ -1,18 +1,21 @@
 import { useState } from "react";
-import { Save, Code2, FileText, Loader2, CheckCircle2 } from "lucide-react";
+import { Save, Code2, FileText, Loader2, CheckCircle2, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { StartWorkflowRequest } from "@/types/workflow";
+import type { StartWorkflowRequest, Agent4Response } from "@/types/workflow";
 
 interface ResolutionCaptureFormProps {
   incidentNumber: string;
   onSubmit: (payload: StartWorkflowRequest) => void;
   isLoading: boolean;
+  /** Pass the Agent 4 result once the workflow completes to show a success state */
+  agent4Result?: Agent4Response;
 }
 
 export function ResolutionCaptureForm({
   incidentNumber,
   onSubmit,
   isLoading,
+  agent4Result,
 }: ResolutionCaptureFormProps) {
   const [resolutionNotes, setResolutionNotes] = useState("");
   const [datafixDescription, setDatafixDescription] = useState("");
@@ -24,6 +27,9 @@ export function ResolutionCaptureForm({
     touched && !resolutionNotes.trim()
       ? "Resolution notes are required."
       : null;
+
+  // If Agent 4 completed successfully and saved, show the resolved confirmation instead of the form.
+  const isResolved = agent4Result?.saved === true && agent4Result?.success === true;
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -39,6 +45,63 @@ export function ResolutionCaptureForm({
     });
   }
 
+  // ── Resolved confirmation view ────────────────────────────────────────────
+  if (isResolved) {
+    return (
+      <div className="space-y-3">
+        {/* Main success card */}
+        <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/8 px-5 py-4">
+          <div className="flex items-start gap-3">
+            <ShieldCheck className="size-5 mt-0.5 shrink-0 text-emerald-400" />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-emerald-300">
+                Incident Resolved &amp; Knowledge Base Updated
+              </p>
+              <p className="mt-1 text-xs text-emerald-300/70 leading-relaxed">
+                <span className="font-mono font-bold">{incidentNumber}</span> has
+                been marked as{" "}
+                <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-400">
+                  RESOLVED
+                </span>{" "}
+                and the resolution has been ingested into the Qdrant knowledge base
+                for future incident matching.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Datafix confirmation */}
+        {agent4Result?.datafix_saved && (
+          <div className="rounded-lg border border-rl-gold/20 bg-rl-gold/5 px-4 py-3">
+            <div className="flex items-center gap-2">
+              <Code2 className="size-3.5 shrink-0 text-rl-gold/70" />
+              <p className="text-xs text-rl-gold/80">
+                Datafix recorded and appended to the mock data store.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* State update confirmation */}
+        {agent4Result?.incident_state_updated && (
+          <div className="rounded-lg border border-muted/20 bg-muted/5 px-4 py-2.5">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="size-3.5 shrink-0 text-muted-foreground" />
+              <p className="text-xs text-muted-foreground">
+                Incident state updated from{" "}
+                <span className="font-semibold text-foreground/60">OPEN / WORK_IN_PROGRESS</span>{" "}
+                →{" "}
+                <span className="font-semibold text-emerald-400">RESOLVED</span>{" "}
+                in the mock incidents data store.
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // ── Capture form ──────────────────────────────────────────────────────────
   return (
     <div className="space-y-5">
       {/* Info banner */}
@@ -51,8 +114,11 @@ export function ResolutionCaptureForm({
             </p>
             <p className="mt-1 text-xs text-amber-300/70 leading-relaxed">
               No similar incidents were found with a match score ≥ 50%. Provide a
-              resolution for <span className="font-mono font-bold">{incidentNumber}</span> so it
-              can be ingested into the knowledge base for future reference.
+              resolution for{" "}
+              <span className="font-mono font-bold">{incidentNumber}</span> so it
+              can be ingested into the knowledge base and the incident can be
+              marked as{" "}
+              <span className="font-semibold text-emerald-400/80">RESOLVED</span>.
             </p>
           </div>
         </div>
@@ -183,12 +249,12 @@ export function ResolutionCaptureForm({
           {isLoading ? (
             <>
               <Loader2 className="size-4 animate-spin" aria-hidden />
-              Saving Resolution…
+              Saving &amp; Resolving…
             </>
           ) : (
             <>
               <Save className="size-4" aria-hidden />
-              Save &amp; Ingest to Knowledge Base
+              Save, Resolve &amp; Ingest to Knowledge Base
             </>
           )}
         </Button>

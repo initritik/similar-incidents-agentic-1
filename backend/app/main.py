@@ -22,6 +22,7 @@ from app.api import (
     agent5_router,
     datafix_router,
     incident_router,
+    resolve_router,
     workflow_router,
 )
 
@@ -42,6 +43,7 @@ app.add_middleware(
 )
 
 app.include_router(incident_router)
+app.include_router(resolve_router)
 app.include_router(datafix_router)
 app.include_router(agent1_router)
 app.include_router(agent2_router)

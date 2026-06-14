@@ -44,7 +44,6 @@ export interface Agent1Response {
   message: string;
   incident: Incident | null;
   missing_fields: string[];
-  incident_resolved: boolean; // true when incident is already in RESOLVED state
 }
 
 export interface Agent2Response {
@@ -69,6 +68,8 @@ export interface Agent4Response {
   saved_incident_number: string | null;
   ingested_to_qdrant: boolean;
   datafix_saved: boolean;
+  /** True when the incident was transitioned to RESOLVED state in the mock store */
+  incident_state_updated: boolean;
   error: string | null;
 }
 
