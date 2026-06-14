@@ -120,6 +120,7 @@ export function normalizeAgent4Response(
       ? String(obj.saved_incident_number)
       : null,
     ingested_to_qdrant: Boolean(obj.ingested_to_qdrant),
+    incident_state_updated: Boolean(obj.incident_state_updated),
     datafix_saved: Boolean(obj.datafix_saved),
     error: obj.error ? String(obj.error) : null,
   };
