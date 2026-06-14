@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback } from "react";
+import { createContext, useContext, useState, useCallback, useEffect } from "react";
 import type { PropsWithChildren } from "react";
 
 export interface UserProfile {
@@ -28,12 +28,23 @@ export function AuthProvider({ children }: PropsWithChildren) {
   const login = useCallback((username: string, password: string): boolean => {
     const key = username.trim().toLowerCase();
     const record = USERS[key];
+    localStorage.setItem("username", key); 
+    localStorage.setItem("password", password.trim()); 
+
     if (!record || record.password !== password.trim()) return false;
     setUser({ username: key, appName: record.appName, welcomeTeam: record.welcomeTeam });
     return true;
   }, []);
 
   const logout = useCallback(() => setUser(null), []);
+
+  useEffect(() => {
+    const storedUsername = localStorage.getItem("username");
+    const storedPassword = localStorage.getItem("password");
+    if (storedUsername && storedPassword) {
+      login(storedUsername, storedPassword);
+    }
+  }, [login]);
 
   return (
     <AuthContext.Provider value={{ user, login, logout }}>

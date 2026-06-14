@@ -119,7 +119,7 @@ export function Login() {
           </div>
           <div className="login-wordmark-text">
             <span className="login-wordmark-primary">AI RESOLUTION</span>
-            <span className="login-wordmark-secondary">Incident Management</span>
+            <span className="login-wordmark-secondary">Ticket Management</span>
           </div>
         </div>
 
@@ -135,7 +135,7 @@ export function Login() {
             <span className="login-heading-accent">continue</span>
           </h1>
           <p className="login-sub">
-            AI-powered incident resolution for enterprise operations.
+            AI-Powered Ticket Resolution
           </p>
         </div>
 
@@ -223,7 +223,7 @@ export function Login() {
 
         {/* Footer */}
         <p className="login-footer" style={s(4)}>
-          Secured enterprise access · TCS Internal
+          SECURED ENTERPRISE ACCESS
         </p>
       </div>
     </div>
