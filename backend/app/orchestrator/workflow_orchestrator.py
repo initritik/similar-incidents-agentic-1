@@ -1,4 +1,5 @@
 import logging
+import time
 from datetime import UTC, datetime
 
 from app.agents import (
@@ -17,6 +18,8 @@ logger = logging.getLogger(__name__)
 
 
 class WorkflowOrchestrator:
+    AGENT_EXECUTION_DELAY_SECONDS = 3
+
     def __init__(self, status_store: WorkflowStatusStore = workflow_store) -> None:
         self.status_store = status_store
         self.agent1 = Agent1DataIntegrityChecker()
@@ -24,6 +27,10 @@ class WorkflowOrchestrator:
         self.agent3 = Agent3SimilarIncidentAnalyzer()
         self.agent4 = Agent4ResolutionCapture()
         self.agent5 = Agent5ResolutionRecommendation()
+
+    def _simulate_agent_execution_delay(self) -> None:
+        """Pause briefly so each agent feels like it is doing real work."""
+        time.sleep(self.AGENT_EXECUTION_DELAY_SECONDS)
 
     def start_workflow(
         self,
@@ -156,6 +163,8 @@ class WorkflowOrchestrator:
             started_at=datetime.now(UTC),
         )
 
+        self._simulate_agent_execution_delay()
+
         result = self.agent1.validate(incident_number)
         self.status_store.store_agent_result(
             workflow_id=workflow_id,
@@ -209,6 +218,8 @@ class WorkflowOrchestrator:
             message="Agent 2 started.",
             started_at=datetime.now(UTC),
         )
+
+        self._simulate_agent_execution_delay()
 
         try:
             # Retrieve the validated incident object from Agent 1's stored result
@@ -274,6 +285,8 @@ class WorkflowOrchestrator:
             message="Agent 3 started.",
             started_at=datetime.now(UTC),
         )
+
+        self._simulate_agent_execution_delay()
 
         try:
             agent2_results = self.status_store.get_agent_result(workflow_id, "Agent 2")
@@ -341,6 +354,8 @@ class WorkflowOrchestrator:
             message="Agent 4 started.",
             started_at=datetime.now(UTC),
         )
+
+        self._simulate_agent_execution_delay()
 
         try:
             incident = IncidentService.get_incident_by_number(incident_number)
@@ -415,6 +430,8 @@ class WorkflowOrchestrator:
             message="Agent5 started.",
             started_at=datetime.now(UTC),
         )
+
+        self._simulate_agent_execution_delay()
 
         try:
             agent1_results = self.status_store.get_agent_result(workflow_id, "Agent 1")
