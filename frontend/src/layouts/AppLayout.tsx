@@ -21,7 +21,7 @@ export function AppLayout({ children }: PropsWithChildren) {
                 {user?.appName ?? "AI RESOLUTION"}
               </span>
               <span className="text-[10px] text-white/50 tracking-wide">
-                Incident Resolution
+                Ticket Resolution
               </span>
             </div>
           </div>

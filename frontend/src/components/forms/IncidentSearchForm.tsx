@@ -52,7 +52,7 @@ export function IncidentSearchForm({
 
       <div className="px-5 py-5">
         <p className="text-xs leading-relaxed text-muted-foreground">
-          Enter a ServiceNow incident identifier to start the five-agent AI
+          Enter a ServiceNow Ticket ID to start the five-agent AI
           resolution pipeline.
         </p>
 
@@ -63,7 +63,7 @@ export function IncidentSearchForm({
               htmlFor="incident-id"
               className="text-xs font-semibold uppercase tracking-wider text-foreground/70"
             >
-              Incident ID
+              Ticket ID
             </label>
             <input
               id="incident-id"

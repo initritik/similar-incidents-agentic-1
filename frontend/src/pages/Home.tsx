@@ -157,7 +157,7 @@ export function Home() {
         <div className="flex items-center gap-2 px-1">
           <div className="h-3 w-0.5 rounded-full bg-rl-gold" aria-hidden />
           <span className="text-[11px] font-semibold uppercase tracking-[0.15em] text-rl-gold/70">
-            Incident Search
+            Ticket Search
           </span>
         </div>
 

@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { Shield } from "lucide-react";
 
 export function Login() {
   const { login } = useAuth();
@@ -11,7 +12,6 @@ export function Login() {
   const usernameRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    // Trigger entrance animation
     const t = setTimeout(() => setMounted(true), 50);
     usernameRef.current?.focus();
     return () => clearTimeout(t);
@@ -24,7 +24,6 @@ export function Login() {
     }
     setIsLoading(true);
     setError("");
-    // Slight delay for premium feel
     await new Promise((r) => setTimeout(r, 600));
     const ok = login(username, password);
     if (!ok) {
@@ -39,58 +38,61 @@ export function Login() {
 
   return (
     <div className="login-root">
-      {/* Animated background orbs */}
+      {/* Subtle ambient orbs — toned down to match nav's dark navy */}
       <div className="login-orb login-orb-1" />
       <div className="login-orb login-orb-2" />
       <div className="login-orb login-orb-3" />
 
-      {/* Grid overlay texture */}
+      {/* Grid texture */}
       <div className="login-grid" />
 
-      {/* Main content */}
+      {/* Main panel */}
       <div
         className="login-content"
         style={{
           opacity: mounted ? 1 : 0,
-          transform: mounted ? "translateY(0)" : "translateY(28px)",
-          transition: "opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1)",
+          transform: mounted ? "translateY(0)" : "translateY(20px)",
+          transition:
+            "opacity 0.6s cubic-bezier(0.22,1,0.36,1), transform 0.6s cubic-bezier(0.22,1,0.36,1)",
         }}
       >
-        {/* Badge */}
-        <div className="login-badge">
-          <span className="login-badge-dot" />
-          <span>TICKET RESOLUTION SYSTEM</span>
+        {/* Top wordmark — mirrors the nav bar branding */}
+        <div className="login-wordmark">
+          <div className="login-wordmark-icon">
+            <Shield size={16} strokeWidth={1.5} />
+          </div>
+          <div className="login-wordmark-text">
+            <span className="login-wordmark-primary">AI RESOLUTION</span>
+            <span className="login-wordmark-secondary">Ticket Management </span>
+          </div>
         </div>
 
-        {/* Headline */}
-        <h1 className="login-headline">
-          <span className="login-headline-line1">Welcome to</span>
-          <span className="login-headline-accent">Ticket Resolution</span>
-          <span className="login-headline-line3">Assistant</span>
-        </h1>
+        {/* Divider */}
+        <div className="login-divider" />
 
-        <p className="login-sub">
-          AI-powered incident management for enterprise operations.
-        </p>
+        {/* Heading — compact and proportional */}
+        <div className="login-heading-block">
+          <h1 className="login-heading">Sign in to continue</h1>
+          <p className="login-sub">
+            AI-powered Ticket Resolution
+          </p>
+        </div>
 
         {/* Card */}
         <div className="login-card">
           <div className="login-card-inner">
-            {/* Card heading */}
-            <div className="login-card-header">
-              <div className="login-card-icon">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <circle cx="10" cy="7" r="3.5" stroke="#C9A84C" strokeWidth="1.5" />
-                  <path d="M3 17c0-3.866 3.134-7 7-7s7 3.134 7 7" stroke="#C9A84C" strokeWidth="1.5" strokeLinecap="round" />
-                </svg>
-              </div>
-              <span className="login-card-title">Sign in to continue</span>
+            {/* Status badge */}
+            <div className="login-status-badge">
+              <span className="login-status-dot" />
+              <span>TICKET RESOLUTION SYSTEM</span>
             </div>
 
             {/* Fields */}
             <div className="login-fields">
               <div className="login-field-group">
-                <label className="login-label" htmlFor="username">Username</label>
+                <label className="login-label" htmlFor="username">
+                  Username
+                </label>
                 <input
                   ref={usernameRef}
                   id="username"
@@ -98,21 +100,29 @@ export function Login() {
                   type="text"
                   placeholder="Enter your username"
                   value={username}
-                  onChange={(e) => { setUsername(e.target.value); setError(""); }}
+                  onChange={(e) => {
+                    setUsername(e.target.value);
+                    setError("");
+                  }}
                   onKeyDown={handleKeyDown}
                   autoComplete="username"
                 />
               </div>
 
               <div className="login-field-group">
-                <label className="login-label" htmlFor="password">Password</label>
+                <label className="login-label" htmlFor="password">
+                  Password
+                </label>
                 <input
                   id="password"
                   className="login-input"
                   type="password"
                   placeholder="Enter your password"
                   value={password}
-                  onChange={(e) => { setPassword(e.target.value); setError(""); }}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setError("");
+                  }}
                   onKeyDown={handleKeyDown}
                   autoComplete="current-password"
                 />
@@ -120,9 +130,26 @@ export function Login() {
 
               {error && (
                 <div className="login-error" role="alert">
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
-                    <circle cx="7" cy="7" r="6" stroke="#F87171" strokeWidth="1.2" />
-                    <path d="M7 4v4M7 9.5v.5" stroke="#F87171" strokeWidth="1.2" strokeLinecap="round" />
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 14 14"
+                    fill="none"
+                    style={{ flexShrink: 0 }}
+                  >
+                    <circle
+                      cx="7"
+                      cy="7"
+                      r="6"
+                      stroke="#F87171"
+                      strokeWidth="1.2"
+                    />
+                    <path
+                      d="M7 4v4M7 9.5v.5"
+                      stroke="#F87171"
+                      strokeWidth="1.2"
+                      strokeLinecap="round"
+                    />
                   </svg>
                   {error}
                 </div>
@@ -139,8 +166,14 @@ export function Login() {
                 ) : (
                   <>
                     <span>Sign In</span>
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                      <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+                      <path
+                        d="M3 7.5h9M8.5 4l3.5 3.5L8.5 11"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
                     </svg>
                   </>
                 )}
@@ -149,8 +182,8 @@ export function Login() {
           </div>
         </div>
 
-        {/* Footer note */}
-        <p className="login-footer">Secured enterprise access · TCS Internal</p>
+        {/* Footer */}
+        <p className="login-footer">SECURED ENTERPRISE ACCESS</p>
       </div>
     </div>
   );
