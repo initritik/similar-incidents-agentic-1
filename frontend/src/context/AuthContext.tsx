@@ -8,7 +8,7 @@ export interface UserProfile {
 }
 
 const USERS: Record<string, { password: string; appName: string; welcomeTeam: string }> = {
-  arijit:  { password: "arijit",  appName: "AMS AI RESOLUTION",     welcomeTeam: "AMS"     },
+  arijit:  { password: "arijit",  appName: "LSC AI RESOLUTION",     welcomeTeam: "LSC"     },
   aswini:  { password: "aswini",  appName: "ORYX AI RESOLUTION",    welcomeTeam: "ORYX"    },
   paulomi: { password: "paulomi", appName: "IRELAND AI RESOLUTION",  welcomeTeam: "IRELAND" },
   admin:   { password: "admin",   appName: "ADMIN AI RESOLUTION",  welcomeTeam: "ADMIN"   },
